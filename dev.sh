@@ -86,14 +86,12 @@ fi
 echo -e "${GREEN}✅ PostgreSQL iniciado com sucesso na porta 9069${NC}"
 
 # =====================================================
-# 4. INSTALAR DEPENDÊNCIAS
+# 4. INSTALAR DEPENDÊNCIAS DOS WORKSPACES
 # =====================================================
 
-echo -e "${BLUE}📦 Instalando/atualizando dependências...${NC}"
-
+echo -e "${BLUE}📦 Instalando dependências dos workspaces...${NC}"
 yarn install
-
-echo -e "${GREEN}✅ Dependências instaladas${NC}"
+echo -e "${GREEN}✅ Dependências dos workspaces instaladas${NC}"
 
 # =====================================================
 # 5. GERAR CLIENTE PRISMA
@@ -132,6 +130,11 @@ cd ../..
 # 6. CONSTRUIR PACOTES
 # =====================================================
 
+
+echo -e "${BLUE}📦 Instalando dependências dos workspaces...${NC}"
+yarn install
+echo -e "${GREEN}✅ Dependências dos workspaces instaladas${NC}"
+
 echo -e "${BLUE}🔨 Construindo pacotes...${NC}"
 
 # Construir domain
@@ -149,14 +152,15 @@ yarn workspace @kaora/application build
 echo -e "${GREEN}✅ Todos os pacotes construídos${NC}"
 
 # =====================================================
-# 7. INICIAR NEXT.JS
+# 7. INSTALAR DEPENDÊNCIAS DO NEXT.JS E INICIAR NEXT.JS
 # =====================================================
 
-echo -e "${BLUE}🌐 Iniciando Next.js...${NC}"
-
+echo -e "${BLUE}📦 Instalando dependências do Next.js...${NC}"
 cd web
+yarn install
+echo -e "${GREEN}✅ Dependências do Next.js instaladas${NC}"
 
-# Iniciar Next.js em background
+echo -e "${BLUE}🌐 Iniciando Next.js...${NC}"
 yarn dev > ../dev.log 2>&1 &
 NEXTJS_PID=$!
 
@@ -172,7 +176,6 @@ if ! ps -p $NEXTJS_PID > /dev/null; then
 fi
 
 echo -e "${GREEN}✅ Next.js iniciado com sucesso na porta 3001${NC}"
-
 cd ..
 
 # =====================================================
