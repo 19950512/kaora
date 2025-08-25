@@ -15,8 +15,7 @@ export class PrismaUserRepository implements UserRepository {
         document: user.document.toString(),
         phone: user.phone.toString(),
         active: user.active,
-        createdAt: new Date(user.createdAt.toString()),
-        updatedAt: user.updatedAt ? new Date(user.updatedAt.toString()) : null,
+        // Deixar que o banco defina createdAt e updatedAt automaticamente
       }
     });
   }

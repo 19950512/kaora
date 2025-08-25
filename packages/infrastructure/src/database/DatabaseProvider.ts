@@ -1,72 +1,48 @@
-// import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '../../prisma/generated/client';
 
 export class DatabaseProvider {
-  private static instance: any | null = null;
+  private static instance: PrismaClient | null = null;
 
-  static getInstance(): any {
+  static getInstance(): PrismaClient {
     if (!DatabaseProvider.instance) {
-      // TODO: Descomentar quando Prisma estiver configurado
-      // DatabaseProvider.instance = new PrismaClient({
-      //   log: ['query', 'info', 'warn', 'error'],
-      // });
-      
-      // Por enquanto, usar mock
-      DatabaseProvider.instance = MockDatabaseProvider.createMockPrisma();
+      DatabaseProvider.instance = new PrismaClient({
+        log: ['query', 'info', 'warn', 'error'],
+        datasources: {
+          db: {
+            url: process.env.DATABASE_URL || "postgresql://kaora:kaora123@localhost:9069/kaora?schema=public"
+          }
+        }
+      });
     }
     return DatabaseProvider.instance;
   }
 
   static async disconnect(): Promise<void> {
     if (DatabaseProvider.instance) {
-      // TODO: Descomentar quando Prisma estiver configurado
-      // await DatabaseProvider.instance.$disconnect();
+      await DatabaseProvider.instance.$disconnect();
       DatabaseProvider.instance = null;
     }
   }
-}
 
-// Mock para desenvolvimento/testes
-export class MockDatabaseProvider {
-  static createMockPrisma() {
-    return {
-      business: {
-        findUnique: async ({ where }: any) => {
-          console.log('🔍 [MOCK DB] Verificando se empresa existe:', where);
-          return null; // Simula que não existe
-        },
-        create: async (data: any) => {
-          console.log('💾 [MOCK DB] Criando empresa:', data.data);
-          return { id: data.data.id, ...data.data };
-        },
-        count: async ({ where }: any) => {
-          console.log('🔢 [MOCK DB] Contando empresas:', where);
-          return 0; // Simula que não existe
-        }
-      },
-      user: {
-        findFirst: async ({ where }: any) => {
-          console.log('🔍 [MOCK DB] Verificando usuário:', where);
-          return null; // Simula que não existe
-        },
-        create: async (data: any) => {
-          console.log('💾 [MOCK DB] Criando usuário:', data.data);
-          return { id: data.data.id, ...data.data };
-        },
-        count: async ({ where }: any) => {
-          console.log('🔢 [MOCK DB] Contando usuários:', where);
-          return 0; // Simula que não existe
-        }
-      },
-      auditLog: {
-        create: async (data: any) => {
-          console.log('📝 [MOCK DB] Criando log de auditoria:', data.data);
-          return { id: data.data.id, ...data.data };
-        },
-        findMany: async ({ where }: any) => {
-          console.log('📋 [MOCK DB] Buscando logs:', where);
-          return []; // Simula lista vazia
-        }
-      }
-    };
+  static async connect(): Promise<void> {
+    const prisma = DatabaseProvider.getInstance();
+    try {
+      await prisma.$connect();
+      console.log('✅ Conectado ao PostgreSQL com sucesso!');
+    } catch (error) {
+      console.error('❌ Erro ao conectar com PostgreSQL:', error);
+      throw error;
+    }
+  }
+
+  static async healthCheck(): Promise<boolean> {
+    try {
+      const prisma = DatabaseProvider.getInstance();
+      await prisma.$queryRaw`SELECT 1`;
+      return true;
+    } catch (error) {
+      console.error('❌ Health check falhou:', error);
+      return false;
+    }
   }
 }

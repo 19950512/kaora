@@ -1,0 +1,87 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "./generated/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// =====================================================
+// BUSINESS (Empresas/Tenants)
+// =====================================================
+
+model Business {
+  id        String   @id @default(uuid()) @db.Uuid
+  name      String   @db.VarChar(255)
+  email     String   @unique @db.VarChar(255)
+  document  String   @unique @db.VarChar(20)
+  phone     String   @db.VarChar(20)
+  whatsapp  String   @db.VarChar(20)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  // Relacionamentos
+  users     User[]
+  
+  @@index([document])
+  @@index([email])
+  @@index([active])
+  @@map("business")
+}
+
+// =====================================================
+// USERS (Usuários das empresas)
+// =====================================================
+
+model User {
+  id           String   @id @default(uuid()) @db.Uuid
+  businessId   String   @map("business_id") @db.Uuid
+  name         String   @db.VarChar(255)
+  email        String   @db.VarChar(255)
+  passwordHash String   @map("password_hash") @db.VarChar(255)
+  document     String   @db.VarChar(20)
+  phone        String   @db.VarChar(20)
+  active       Boolean  @default(true)
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt    DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  // Relacionamentos
+  business  Business    @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  auditLogs AuditLog[]
+
+  // Constraints
+  @@unique([businessId, email])
+  @@index([businessId])
+  @@index([email])
+  @@index([document])
+  @@index([active])
+  @@index([businessId, email])
+  @@map("users")
+}
+
+// =====================================================
+// AUDIT_LOGS (Logs de auditoria)
+// =====================================================
+
+model AuditLog {
+  id             String   @id @default(uuid()) @db.Uuid
+  context        String   @db.VarChar(50)
+  userId         String   @map("user_id") @db.Uuid
+  timestamp      DateTime @default(now()) @db.Timestamptz
+  details        String?  @db.Text
+  updatedFields  String?  @map("updated_fields") @db.Text
+
+  // Relacionamentos
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([context])
+  @@index([timestamp])
+  @@map("audit_logs")
+}

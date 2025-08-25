@@ -13,8 +13,8 @@ export class PrismaBusinessRepository implements BusinessRepository {
         document: business.document.toString(),
         phone: business.phone.toString(),
         whatsapp: business.whatsapp.toString(),
-        createdAt: new Date(business.createdAt.toString()),
-        updatedAt: business.updatedAt ? new Date(business.updatedAt.toString()) : null,
+        // Deixar que o banco defina createdAt e updatedAt automaticamente
+        // createdAt e updatedAt são definidos pelo schema do Prisma com @default(now()) e @updatedAt
       }
     });
   }

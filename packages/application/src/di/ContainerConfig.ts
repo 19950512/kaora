@@ -1,20 +1,14 @@
 import { DIContainer, TOKENS } from './Container';
 
 // Lazy imports para evitar problemas de dependência circular
-export function createContainer(useMockDatabase = process.env.NODE_ENV === 'development'): DIContainer {
+export function createContainer(useMockDatabase = false): DIContainer {
   const container = new DIContainer();
 
-  // 🗄️ Database Provider (Singleton)
+  // 🗄️ Database Provider (Singleton) - Sempre usar PostgreSQL real
   container.register(TOKENS.PRISMA_CLIENT, () => {
-    if (useMockDatabase) {
-      // Dynamic import para mock
-      const { MockDatabaseProvider } = require('@kaora/infrastructure');
-      return MockDatabaseProvider.createMockPrisma();
-    } else {
-      // Dynamic import para Prisma real
-      const { DatabaseProvider } = require('@kaora/infrastructure');
-      return DatabaseProvider.getInstance();
-    }
+    // Dynamic import para Prisma real
+    const { DatabaseProvider } = require('@kaora/infrastructure');
+    return DatabaseProvider.getInstance();
   }, true); // Singleton
 
   // 🏪 Repositories

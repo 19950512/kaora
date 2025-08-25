@@ -9,10 +9,10 @@
   ],
   "packageManager": "yarn@4.9.3",
   "devDependencies": {
-    "@types/node": "^24.3.0",
-    "prisma": "6.14.0"
+    "@types/node": "^20.10.0",
+    "prisma": "^5.7.0"
   },
   "dependencies": {
-    "@prisma/client": "6.14.0"
+    "@prisma/client": "^5.7.0"
   }
 }

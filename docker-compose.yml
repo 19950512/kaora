@@ -1,0 +1,35 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: kaora-postgres
+    restart: unless-stopped
+    ports:
+      - "9069:5432"
+    environment:
+      POSTGRES_DB: kaora
+      POSTGRES_USER: kaora_user
+      POSTGRES_PASSWORD: kaora_password123
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=C"
+    volumes:
+      - ./docker/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - kaora-network
+
+  # Para futuras expansões (Redis, etc)
+  # redis:
+  #   image: redis:7-alpine
+  #   container_name: kaora-redis
+  #   restart: unless-stopped
+  #   ports:
+  #     - "6379:6379"
+  #   networks:
+  #     - kaora-network
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  kaora-network:
+    driver: bridge
