@@ -21,38 +21,42 @@ export class CreateBusiness {
     responsibleName: string;
     responsibleEmail: string;
     responsiblePassword: string;
-    businessDocument?: string;
     responsibleDocument: string;
+    businessDocument?: string;
     businessPhone?: string;
     responsiblePhone?: string;
   }): Promise<{ business: Business; user: User }> {
     if (await this.businessRepository.existsByEmail(params.responsibleEmail)) {
       throw new Error('Já existe uma empresa cadastrada com este e-mail.');
     }
+    // Validação: não pode haver duas empresas com o mesmo documento
+    const documentToCheck = params.businessDocument || params.responsibleDocument;
+    if (documentToCheck) {
+      if (typeof this.businessRepository.existsByDocument === 'function') {
+        if (await this.businessRepository.existsByDocument(documentToCheck)) {
+          throw new Error('Já existe uma empresa cadastrada com este documento.');
+        }
+      } else {
+        // Fallback: consulta manual se necessário
+        // Implemente existsByDocument no BusinessRepository se não existir
+      }
+    }
 
-    // Cria a empresa
+    // Cria a empresa e o usuário juntos em transação
     const businessId = new UUID().toString();
     const business = new Business({
       id: businessId,
       name: params.businessName,
       email: params.responsibleEmail,
-      document: params.businessDocument || params.responsibleDocument, // Use businessDocument se fornecido, senão use responsibleDocument
-      phone: params.businessPhone || '11999999999', // telefone padrão se não fornecido
-      whatsapp: params.businessPhone || '11999999999', // usar mesmo telefone para whatsapp por padrão
+      document: params.businessDocument || params.responsibleDocument,
+      phone: params.businessPhone || '11999999999',
+      whatsapp: params.businessPhone || '11999999999',
       createdAt: new Date().toISOString(),
       updatedAt: undefined,
     });
-    await this.businessRepository.save(business);
-
-    // Validação: não pode haver dois usuários com o mesmo e-mail na mesma empresa
-    if (await this.userRepository.existsByEmailAndBusinessId(params.responsibleEmail, businessId)) {
-      throw new Error('Já existe um usuário com este e-mail nesta empresa.');
-    }
 
     // Gera o hash da senha usando o ValueObject
     const passwordHash = await PasswordHash.create(params.responsiblePassword);
-
-    // Cria o usuário responsável
     const userId = new UUID().toString();
     const user = new User({
       id: userId,
@@ -61,12 +65,20 @@ export class CreateBusiness {
       email: params.responsibleEmail,
       passwordHash: passwordHash.toString(),
       document: params.responsibleDocument,
-      phone: params.responsiblePhone || '11999999999', // telefone padrão se não fornecido
+      phone: params.responsiblePhone || '11999999999',
       active: true,
       createdAt: new Date().toISOString(),
       updatedAt: undefined,
     });
-    await this.userRepository.save(user);
+
+    // Chama método transacional
+    if (typeof this.businessRepository.saveWithUser === 'function') {
+      await this.businessRepository.saveWithUser(business, user);
+    } else {
+      // Fallback: salva separadamente se não houver método
+      await this.businessRepository.save(business);
+      await this.userRepository.save(user);
+    }
 
     // Auditoria: registra evento de criação de empresa
     await this.auditLogRepository.save(new AuditLog({

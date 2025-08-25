@@ -6,6 +6,7 @@ export interface CreateBusinessRequest {
   responsibleEmail: string;
   responsiblePassword: string;
   responsibleDocument: string;
+  businessDocument?: string;
   businessPhone?: string;
   responsiblePhone?: string;
 }
@@ -31,7 +32,7 @@ export class BusinessApplicationService {
         responsibleName: request.responsibleName,
         responsibleEmail: request.responsibleEmail,
         responsiblePassword: request.responsiblePassword,
-        businessDocument: request.responsibleDocument,
+        businessDocument: request.businessDocument,
         responsibleDocument: request.responsibleDocument,
         businessPhone: request.businessPhone || '11999999999',
         responsiblePhone: request.responsiblePhone || '11999999999'

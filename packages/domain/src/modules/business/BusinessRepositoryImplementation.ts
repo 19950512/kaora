@@ -10,8 +10,39 @@ export function setPrismaClient(client: any) {
 }
 
 export class BusinessRepositoryImplementation implements BusinessRepository {
+  async save(business: Business): Promise<void> {
+    if (!prisma) throw new Error('PrismaClient não está disponível.');
+    try {
+      await prisma.business.create({
+        data: {
+          id: business.id.toString(),
+          name: business.name.toString(),
+          email: business.email.toString(),
+          document: business.document.toString(),
+          phone: business.phone.toString(),
+          whatsapp: business.whatsapp.toString(),
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+      });
+    } catch (err: any) {
+      const isDuplicateDocument = (
+        (err.code === 'P2002' && err.meta?.target?.includes('document')) ||
+        (typeof err.message === 'string' && err.message.includes('Unique constraint failed') && err.message.includes('document'))
+      );
+      if (isDuplicateDocument) {
+        throw new Error('Já existe uma empresa cadastrada com este documento.');
+      }
+      throw err;
+    }
+  }
   async existsByEmail(email: string): Promise<boolean> {
     const business = await prisma.business.findUnique({ where: { email } });
+    return business !== null;
+  }
+
+  async existsByDocument(document: string): Promise<boolean> {
+    const business = await prisma.business.findUnique({ where: { document } });
     return business !== null;
   }
 
@@ -30,20 +61,36 @@ export class BusinessRepositoryImplementation implements BusinessRepository {
     });
   }
 
-  async save(business: Business): Promise<void> {
+  async saveWithUser(business: Business, user: any): Promise<void> {
     if (!prisma) throw new Error('PrismaClient não está disponível.');
-    await prisma.business.create({
-      data: {
-        id: business.id.toString(),
-        name: business.name.toString(),
-        email: business.email.toString(),
-        document: business.document.toString(),
-        phone: business.phone.toString(),
-        whatsapp: business.whatsapp.toString(),
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-    });
+    await prisma.$transaction([
+      prisma.business.create({
+        data: {
+          id: business.id.toString(),
+          name: business.name.toString(),
+          email: business.email.toString(),
+          document: business.document.toString(),
+          phone: business.phone.toString(),
+          whatsapp: business.whatsapp.toString(),
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+      }),
+      prisma.user.create({
+        data: {
+          id: user.id.toString(),
+          businessId: business.id.toString(),
+          name: user.name.toString(),
+          email: user.email.toString(),
+          passwordHash: user.passwordHash,
+          document: user.document.toString(),
+          phone: user.phone.toString(),
+          active: user.active,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+      })
+    ]);
   }
 
   async findById(id: string): Promise<Business | null> {

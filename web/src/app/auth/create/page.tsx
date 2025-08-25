@@ -1,5 +1,6 @@
 "use client";
 import { useState } from 'react';
+import React from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
 
@@ -9,6 +10,8 @@ export default function CreateAccount() {
   const [responsibleEmail, setResponsibleEmail] = useState('');
   const [responsiblePassword, setResponsiblePassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [responsibleDocument, setResponsibleDocument] = useState('');
+  const [businessDocument, setBusinessDocument] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -19,7 +22,7 @@ export default function CreateAccount() {
     e.preventDefault();
     setLoading(true);
     setError('');
-    setSuccess('');
+  setSuccess('');
     if (responsiblePassword.length < 8) {
       setLoading(false);
       setError('A senha deve ter pelo menos 8 caracteres.');
@@ -32,6 +35,12 @@ export default function CreateAccount() {
       toast.error('As senhas não coincidem.');
       return;
     }
+    if (!responsibleDocument || responsibleDocument.trim().length === 0) {
+      setLoading(false);
+      setError('O documento do responsável é obrigatório.');
+      toast.error('O documento do responsável é obrigatório.');
+      return;
+    }
     try {
       const res = await fetch('/api/business/create', {
         method: 'POST',
@@ -40,7 +49,9 @@ export default function CreateAccount() {
           businessName,
           responsibleName,
           responsibleEmail,
-          responsiblePassword
+          responsiblePassword,
+          responsibleDocument,
+          businessDocument
         })
       });
       const data = await res.json();
@@ -108,6 +119,14 @@ export default function CreateAccount() {
                 className="w-full px-4 py-3 border border-[#A7C957] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4F772D] bg-white text-[#1B3A2B] placeholder-[#A0AEC0] font-inter"
                 required
               />
+              <label className="block text-[#1B3A2B] font-semibold mt-4 mb-2">Documento da Empresa (CNPJ, opcional)</label>
+              <input
+                type="text"
+                placeholder="Digite o CNPJ da empresa"
+                value={businessDocument}
+                onChange={e => setBusinessDocument(e.target.value)}
+                className="w-full px-4 py-3 border border-[#A7C957] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4F772D] bg-white text-[#1B3A2B] placeholder-[#A0AEC0] font-inter"
+              />
             </div>
             <div className="bg-[#A7C957]/20 rounded-xl p-6 border border-[#4F772D] shadow-md">
               <h3 className="text-lg font-bold text-[#1B3A2B] mb-4 flex items-center gap-2">
@@ -129,6 +148,15 @@ export default function CreateAccount() {
                 placeholder="Digite o e-mail"
                 value={responsibleEmail}
                 onChange={e => setResponsibleEmail(e.target.value)}
+                className="w-full px-4 py-3 border border-[#4F772D] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#A7C957] bg-white text-[#1B3A2B] placeholder-[#A0AEC0] font-inter"
+                required
+              />
+              <label className="block text-[#1B3A2B] font-semibold mt-4 mb-2">Documento do Responsável (CPF ou outro)</label>
+              <input
+                type="text"
+                placeholder="Digite o documento do responsável"
+                value={responsibleDocument}
+                onChange={e => setResponsibleDocument(e.target.value)}
                 className="w-full px-4 py-3 border border-[#4F772D] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#A7C957] bg-white text-[#1B3A2B] placeholder-[#A0AEC0] font-inter"
                 required
               />

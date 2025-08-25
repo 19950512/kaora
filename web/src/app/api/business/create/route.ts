@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { businessName, responsibleName, responsibleEmail, responsiblePassword, responsibleDocument, businessPhone, responsiblePhone } = body;
+  const { businessName, responsibleName, responsibleEmail, responsiblePassword, responsibleDocument, businessDocument, businessPhone, responsiblePhone } = body;
 
     // Validação básica
     if (!businessName || !responsibleName || !responsibleEmail || !responsiblePassword || !responsibleDocument) {
@@ -25,6 +25,7 @@ export async function POST(request: Request) {
         responsibleEmail,
         responsiblePassword,
         responsibleDocument,
+        businessDocument,
         businessPhone,
         responsiblePhone
       });
@@ -38,7 +39,12 @@ export async function POST(request: Request) {
 
     } catch (err: any) {
       console.error('❌ Erro ao criar empresa:', err);
-      return NextResponse.json({ error: err.message || 'Erro ao criar empresa.' }, { status: 400 });
+      let errorMsg = err?.message || 'Erro ao criar empresa.';
+      // Garante que a mensagem amigável de duplicidade seja exibida
+      if (typeof errorMsg === 'string' && errorMsg.includes('Unique constraint failed') && errorMsg.includes('document')) {
+        errorMsg = 'Já existe uma empresa cadastrada com este documento.';
+      }
+      return NextResponse.json({ error: errorMsg }, { status: 400 });
     }
   } catch (error) {
     console.error('❌ Erro no endpoint:', error);

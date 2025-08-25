@@ -2,6 +2,40 @@ import { BusinessRepository } from '@kaora/domain';
 import { Business } from '@kaora/domain';
 
 export class PrismaBusinessRepository implements BusinessRepository {
+  async saveWithUser(business: any, user: any): Promise<void> {
+    await this.prisma.$transaction([
+      this.prisma.business.create({
+        data: {
+          id: business.id.toString(),
+          name: business.name.toString(),
+          email: business.email.toString(),
+          document: business.document.toString(),
+          phone: business.phone.toString(),
+          whatsapp: business.whatsapp.toString(),
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+      }),
+      this.prisma.user.create({
+        data: {
+          id: user.id.toString(),
+          businessId: business.id.toString(),
+          name: user.name.toString(),
+          email: user.email.toString(),
+          passwordHash: user.passwordHash,
+          document: user.document.toString(),
+          phone: user.phone.toString(),
+          active: user.active,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+      })
+    ]);
+  }
+  async existsByDocument(document: string): Promise<boolean> {
+    const count = await this.prisma.business.count({ where: { document } });
+    return count > 0;
+  }
   constructor(private prisma: any) {}
 
   async save(business: Business): Promise<void> {

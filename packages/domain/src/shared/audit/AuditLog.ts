@@ -21,7 +21,7 @@ export class AuditLog {
     this.context = params.context;
     this.userId = params.userId;
     this.details = params.details;
-    this.timestamp = new Data(params.timestamp);
+  this.timestamp = new Data(params.timestamp ?? new Date());
     this.updatedFields = params.updatedFields;
   }
 }

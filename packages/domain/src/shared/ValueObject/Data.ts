@@ -3,13 +3,19 @@ export class Data {
   public value: Date;
 
   constructor(value: string | Date | undefined) {
+    let date: Date;
     if (!value) {
-      this.value = new Date();
+      date = new Date();
     } else if (typeof value === 'string') {
-      this.value = new Date(value);
+      date = new Date(value);
     } else {
-      this.value = value;
+      date = value;
     }
+    // Se a data for inválida, usa a data atual
+    if (isNaN(date.getTime())) {
+      date = new Date();
+    }
+    this.value = date;
   }
 
   toISOString(): string {

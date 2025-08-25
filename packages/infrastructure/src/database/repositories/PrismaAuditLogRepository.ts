@@ -10,7 +10,7 @@ export class PrismaAuditLogRepository implements AuditLogRepository {
         id: auditLog.id.toString(),
         context: auditLog.context,
         userId: auditLog.userId.toString(),
-        timestamp: new Date(auditLog.timestamp.toString()),
+        timestamp: auditLog.timestamp.value,
         details: auditLog.details,
       }
     });

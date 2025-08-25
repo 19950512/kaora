@@ -1,5 +1,7 @@
 #!/bin/bash
 
+clear
+
 echo "🏗️ Building Kaora Clean Architecture..."
 echo "==========================================="
 
