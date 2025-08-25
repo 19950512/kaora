@@ -1,0 +1,18 @@
+{
+  "name": "kaora-monorepo",
+  "private": true,
+  "workspaces": [
+    "web",
+    "packages/domain",
+    "packages/application",
+    "packages/infrastructure"
+  ],
+  "packageManager": "yarn@4.9.3",
+  "devDependencies": {
+    "@types/node": "^24.3.0",
+    "prisma": "6.14.0"
+  },
+  "dependencies": {
+    "@prisma/client": "6.14.0"
+  }
+}

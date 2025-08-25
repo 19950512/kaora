@@ -1,0 +1,20 @@
+{
+  "name": "@kaora/application",
+  "version": "1.0.0",
+  "description": "Kaora Application Layer - Services and DI",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist",
+    "rebuild": "yarn clean && yarn build"
+  },
+  "dependencies": {
+    "@kaora/domain": "workspace:*",
+    "@kaora/infrastructure": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^24.3.0",
+    "typescript": "^5.0.0"
+  }
+}
