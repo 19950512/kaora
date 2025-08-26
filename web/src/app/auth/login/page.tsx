@@ -1,108 +1,124 @@
 "use client";
-import { useState } from 'react';
-import toast, { Toaster } from 'react-hot-toast';
-import { Eye, EyeOff } from 'lucide-react';
+import { useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
+import { signIn, useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
-export default function Login() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+export default function LoginPage() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (session) {
+      router.push("/dashboard");
+    }
+  }, [session, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
+    setError("");
+    
     if (!email || !password) {
       setLoading(false);
-      setError('Preencha todos os campos.');
-      toast.error('Preencha todos os campos.');
+      setError("Preencha todos os campos.");
       return;
     }
-    // Aqui você faria a chamada para o backend
-    setTimeout(() => {
+    
+    if (password.length < 8) {
       setLoading(false);
-      toast.error('Login simulado. Implemente integração com backend.');
-      setError('Login simulado. Implemente integração com backend.');
-    }, 1500);
+      setError("A senha deve ter pelo menos 8 caracteres.");
+      return;
+    }
+    
+    // Aqui você pode integrar com sua API de autenticação local
+    try {
+      const result = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      });
+      
+      if (result?.error) {
+        setError("E-mail ou senha inválidos.");
+      } else {
+        router.push("/dashboard");
+      }
+    } catch (err) {
+      setError("Erro de conexão.");
+    } finally {
+      setLoading(false);
+    }
   };
 
+  const handleGoogleSignIn = async () => {
+    try {
+      await signIn("google", { callbackUrl: "/dashboard" });
+    } catch (error) {
+      setError("Erro ao fazer login com Google.");
+    }
+  };
+
+  if (status === "loading") {
+    return <div className="min-h-screen flex items-center justify-center">Carregando...</div>;
+  }
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#1B3A2B] via-[#4F772D] to-[#A7C957] font-inter relative overflow-hidden">
-      {/* SVG decorativo de folhas no canto inferior esquerdo */}
-      {/* SVG folha de palmeira no canto inferior esquerdo */}
-      <svg className="absolute left-0 bottom-0 w-[28rem] h-[28rem] opacity-25 pointer-events-none" viewBox="0 0 448 448" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M224 420 Q210 350 120 340 Q80 330 140 300 Q200 270 120 220 Q60 180 160 180 Q260 180 200 120 Q140 60 224 60 Q308 60 248 120 Q188 180 288 180 Q388 180 328 220 Q268 270 328 300 Q388 330 328 340 Q238 350 224 420 Z" fill="#43AA8B"/>
-        <path d="M224 420 Q230 370 280 360 Q320 350 270 320 Q220 290 280 250 Q340 210 240 210 Q140 210 200 250 Q260 290 200 320 Q140 350 200 360 Q250 370 224 420 Z" fill="#A7C957"/>
-      </svg>
-      {/* SVG tucano estilizado no canto superior direito */}
-      <svg className="absolute right-16 top-12 w-52 h-52 opacity-40 pointer-events-none" viewBox="0 0 208 208" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <ellipse cx="104" cy="160" rx="60" ry="28" fill="#F9DC5C"/>
-        <ellipse cx="104" cy="104" rx="40" ry="28" fill="#1B3A2B"/>
-        <ellipse cx="144" cy="90" rx="16" ry="10" fill="#F95738"/>
-        <ellipse cx="64" cy="90" rx="16" ry="10" fill="#43AA8B"/>
-        <circle cx="132" cy="98" r="5" fill="#fff"/>
-        <circle cx="76" cy="98" r="5" fill="#fff"/>
-        <rect x="120" y="80" width="32" height="8" rx="4" fill="#F9DC5C"/>
-        <rect x="56" y="80" width="32" height="8" rx="4" fill="#F9DC5C"/>
-        <path d="M104 104 Q120 120 144 140" stroke="#F95738" strokeWidth="6" strokeLinecap="round"/>
-        <path d="M104 104 Q88 120 64 140" stroke="#43AA8B" strokeWidth="6" strokeLinecap="round"/>
-      </svg>
-      <Toaster position="top-right" />
-  <div className="bg-[#F7F8FA]/90 rounded-2xl shadow-2xl p-10 w-full max-w-xl border border-[#A7C957] relative z-10">
-        <h2 className="text-4xl font-extrabold text-center text-[#1B3A2B] mb-8 drop-shadow font-inter flex items-center justify-center gap-2">
-          <span>
-            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="16" cy="16" r="16" fill="#A7C957"/>
-              <path d="M10 22C12 18 20 18 22 22" stroke="#1B3A2B" strokeWidth="2" strokeLinecap="round"/>
-              <path d="M12 14C12 12 14 10 16 10C18 10 20 12 20 14" stroke="#4F772D" strokeWidth="2" strokeLinecap="round"/>
-            </svg>
-          </span>
-          Login Kaora
-        </h2>
-  <form onSubmit={handleSubmit} className="space-y-8 font-inter">
-          <div>
-            <label className="block text-[#1B3A2B] font-semibold mb-2">E-mail</label>
-            <input
-              type="email"
-              placeholder="Digite seu e-mail"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              className="w-full px-4 py-3 border border-[#A7C957] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4F772D] bg-white text-[#1B3A2B] placeholder-[#A0AEC0] font-inter"
-              required
-            />
-          </div>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-200 via-green-100 to-green-300 font-sans">
+      <div className="bg-white/80 rounded-2xl shadow-2xl p-8 w-full max-w-lg border border-green-300 relative z-10">
+        <div className="flex flex-col items-center mb-6">
+          <img src="/globe.svg" alt="Logo" className="w-14 h-14 mb-2" />
+          <h1 className="text-2xl font-bold text-green-900 mb-1">Entrar na Kaora</h1>
+          <p className="text-green-700 text-sm">Bem-vindo de volta! Faça login para continuar.</p>
+        </div>
+        
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <input 
+            type="email" 
+            placeholder="E-mail" 
+            value={email} 
+            onChange={e => setEmail(e.target.value)} 
+            className="px-4 py-3 rounded-lg border border-green-200 focus:outline-none focus:ring-2 focus:ring-green-300 bg-white text-green-900 placeholder-green-400" 
+            required 
+          />
           <div className="relative">
-            <label className="block text-[#1B3A2B] font-semibold mb-2">Senha</label>
-            <input
-              type={showPassword ? "text" : "password"}
-              placeholder="Digite sua senha"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              className="w-full px-4 py-3 border border-[#A7C957] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4F772D] bg-white text-[#1B3A2B] placeholder-[#A0AEC0] pr-12 font-inter"
-              required
+            <input 
+              type={showPassword ? "text" : "password"} 
+              placeholder="Senha" 
+              value={password} 
+              onChange={e => setPassword(e.target.value)} 
+              className="px-4 py-3 rounded-lg border border-green-200 focus:outline-none focus:ring-2 focus:ring-green-300 bg-white text-green-900 placeholder-green-400 pr-12 w-full" 
+              required 
+              minLength={8} 
             />
-            <button
-              type="button"
-              className="absolute right-3 top-10 text-[#A0AEC0] hover:text-[#4F772D]"
-              tabIndex={-1}
+            <button 
+              type="button" 
+              className="absolute right-3 top-3 text-green-400 hover:text-green-700" 
+              tabIndex={-1} 
               onClick={() => setShowPassword(v => !v)}
             >
               {showPassword ? <EyeOff size={22} /> : <Eye size={22} />}
             </button>
           </div>
-          <button
-            type="submit"
-            className="w-full bg-gradient-to-r from-[#1B3A2B] via-[#4F772D] to-[#A7C957] text-white py-3 rounded-lg font-bold text-lg shadow-lg hover:scale-105 transition-transform duration-150 focus:outline-none focus:ring-2 focus:ring-[#4F772D] font-inter mb-4"
+          
+          <button 
+            type="submit" 
+            className="w-full bg-gradient-to-r from-green-700 via-green-500 to-green-300 text-white py-3 rounded-lg font-bold text-lg shadow-lg hover:scale-105 transition-transform duration-150 focus:outline-none focus:ring-2 focus:ring-green-700 mb-2" 
             disabled={loading}
           >
-            {loading ? 'Entrando...' : 'Entrar'}
+            {loading ? "Entrando..." : "Entrar"}
           </button>
-          <button
-            type="button"
-            className="w-full flex items-center justify-center gap-3 bg-white border border-[#A7C957] text-[#1B3A2B] py-3 rounded-lg font-bold text-lg shadow hover:bg-[#A7C957]/10 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-[#A7C957] font-inter"
-            onClick={() => toast('Funcionalidade Google em breve!')}
+          
+          <button 
+            type="button" 
+            className="w-full flex items-center justify-center gap-3 bg-white border border-green-300 text-green-900 py-3 rounded-lg font-bold text-lg shadow hover:bg-green-100 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-green-300" 
+            onClick={handleGoogleSignIn}
           >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <g>
@@ -112,15 +128,23 @@ export default function Login() {
                 <path d="M12 6.545c1.47 0 2.786.506 3.825 1.497l2.868-2.868C16.97 3.893 14.7 3 12 3A9.997 9.997 0 0 0 3.013 7.507l3.354 2.607C7.163 8.315 9.38 6.545 12 6.545z" fill="#EA4335"/>
               </g>
             </svg>
-            Entrar com Google
+            Continuar com Google
           </button>
-          {error && <div className="text-[#B22222] text-center font-semibold animate-pulse font-inter">{error}</div>}
+          
           <div className="mt-2 text-center">
-            <a href="/auth/recovery" className="text-[#4F772D] hover:underline font-semibold font-inter">Esqueceu a senha?</a>
+            <p className="text-sm text-green-600 bg-green-50 p-2 rounded-lg">
+              💡 Com Google: Entre rapidamente e configure apenas os dados da empresa
+            </p>
           </div>
+          
+          {error && <div className="text-red-600 text-center font-semibold animate-pulse">{error}</div>}
         </form>
-        <div className="mt-8 text-center">
-          <a href="/auth/create" className="text-[#4F772D] hover:underline font-semibold font-inter">Criar conta</a>
+        
+        <div className="mt-6 text-center">
+          <a href="/auth/recovery" className="text-green-700 hover:underline font-semibold">Esqueceu a senha?</a>
+        </div>
+        <div className="mt-2 text-center">
+          <a href="/auth/create" className="text-green-700 hover:underline font-semibold">Não tem conta? Cadastre-se</a>
         </div>
       </div>
     </div>

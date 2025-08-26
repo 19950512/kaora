@@ -1,0 +1,120 @@
+.background {
+  min-height: 100vh;
+  width: 100vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.desktopContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+}
+
+.illustration {
+  display: none;
+}
+
+.illustrationImg {
+  width: 340px;
+  height: auto;
+  filter: drop-shadow(0 8px 32px rgba(44, 62, 80, 0.12));
+  animation: float 2.5s ease-in-out infinite alternate;
+}
+
+@keyframes float {
+  from { transform: translateY(0); }
+  to { transform: translateY(-18px); }
+}
+
+.card {
+  background: rgba(255,255,255,0.25);
+  border-radius: 32px;
+  box-shadow: 0 12px 48px rgba(44, 62, 80, 0.18);
+  padding: 3.5rem 2.5rem;
+  max-width: 440px;
+  width: 90vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid rgba(255,255,255,0.18);
+  animation: fadeIn 0.8s cubic-bezier(.4,0,.2,1);
+  z-index: 2;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.logoContainer {
+  margin-bottom: 2rem;
+  background: rgba(255,255,255,0.5);
+  border-radius: 50%;
+  padding: 0.7rem;
+  box-shadow: 0 2px 8px rgba(44, 62, 80, 0.08);
+}
+
+.title {
+  font-family: 'Montserrat', 'Segoe UI', Arial, sans-serif;
+  font-size: 2.3rem;
+  font-weight: 800;
+  color: #1a2940;
+  margin-bottom: 0.7rem;
+  text-align: center;
+  letter-spacing: 0.02em;
+}
+
+.subtitle {
+  font-size: 1.15rem;
+  color: #3a4a65;
+  margin-bottom: 2.2rem;
+  text-align: center;
+  font-weight: 500;
+}
+
+.formContainer {
+  width: 100%;
+}
+
+@media (min-width: 900px) {
+  .desktopContainer {
+    flex-direction: row;
+    justify-content: center;
+    gap: 64px;
+  }
+  .illustration {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+    animation: fadeIn 1.2s cubic-bezier(.4,0,.2,1);
+  }
+  .card {
+    max-width: 440px;
+    min-width: 340px;
+    padding: 3.5rem 2.5rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .card {
+    padding: 1.5rem 0.5rem;
+    max-width: 98vw;
+    border-radius: 18px;
+  }
+  .title {
+    font-size: 1.4rem;
+  }
+  .subtitle {
+    font-size: 1rem;
+  }
+}

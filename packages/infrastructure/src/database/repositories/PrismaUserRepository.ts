@@ -56,4 +56,33 @@ export class PrismaUserRepository implements UserRepository {
       where: { id }
     });
   }
+
+  async findByEmailWithBusiness(email: string): Promise<{ user: User; business: any } | null> {
+    const data = await this.prisma.user.findFirst({
+      where: { email },
+      include: {
+        business: true
+      }
+    });
+
+    if (!data) return null;
+
+    const user = new User({
+      id: data.id,
+      businessId: data.businessId,
+      name: data.name,
+      email: data.email,
+      passwordHash: data.passwordHash,
+      document: data.document,
+      phone: data.phone,
+      active: data.active,
+      createdAt: data.createdAt?.toISOString(),
+      updatedAt: data.updatedAt?.toISOString(),
+    });
+
+    return {
+      user,
+      business: data.business
+    };
+  }
 }

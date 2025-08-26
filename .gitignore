@@ -9,6 +9,10 @@ node_modules
 .env.staging
 .env.development
 
+# Google OAuth credentials
+client_secret_*.json
+credentials.json
+
 # Database
 *.db
 *.sqlite

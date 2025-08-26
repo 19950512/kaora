@@ -5,6 +5,12 @@ export class PasswordHash {
     return new PasswordHash(hashedPassword);
   }
 
+  static async verify(password: string, hashedPassword: string): Promise<boolean> {
+    // Verifica se a senha invertida coincide com o hash armazenado
+    const invertedPassword = password.split('').reverse().join('');
+    return invertedPassword === hashedPassword;
+  }
+
   constructor(private readonly value: string) {}
 
   toString(): string {

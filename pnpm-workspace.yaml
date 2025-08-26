@@ -1,0 +1,8 @@
+packages:
+  - 'packages/*'
+  - 'web'
+
+ignoredBuiltDependencies:
+  - '@prisma/client'
+  - '@prisma/engines'
+  - prisma

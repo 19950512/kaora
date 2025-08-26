@@ -3,15 +3,16 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 3001",
+    "dev": "next dev -p 3000",
     "build": "next build",
-    "start": "next start -p 3001",
+    "start": "next start -p 3000",
     "lint": "eslint"
   },
   "dependencies": {
     "@kaora/application": "workspace:*",
     "lucide-react": "^0.541.0",
     "next": "15.5.0",
+    "next-auth": "^4.24.11",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-hot-toast": "^2.6.0"
@@ -26,6 +27,6 @@
     "eslint-config-next": "15.5.0",
     "prisma": "6.14.0",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "5.9.2"
   }
 }
