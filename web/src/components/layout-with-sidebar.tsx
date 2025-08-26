@@ -2,13 +2,14 @@
 
 import { useState, useEffect } from 'react'
 import { usePathname } from 'next/navigation'
+import { signOut, useSession } from 'next-auth/react'
 import Link from 'next/link'
 import { 
   Menu, 
   X, 
   Home, 
   Users, 
-  Building2, 
+  Box, 
   FileText, 
   DollarSign, 
   Settings, 
@@ -16,7 +17,8 @@ import {
   ChevronRight,
   ChevronLeft,
   Bell,
-  User
+  User,
+  LogOut
 } from 'lucide-react'
 import { ThemeToggle } from './theme-toggle'
 import { cn } from '@/lib/utils'
@@ -37,32 +39,6 @@ const menuItems = [
     ]
   },
   {
-    title: 'Imóveis',
-    icon: Building2,
-    children: [
-      { title: 'Lista de Imóveis', href: '/imoveis' },
-      { title: 'Novo Imóvel', href: '/imoveis/novo' },
-    ]
-  },
-  {
-    title: 'Contratos',
-    icon: FileText,
-    children: [
-      { title: 'Contratos Ativos', href: '/contratos' },
-      { title: 'Novo Contrato', href: '/contratos/novo' },
-      { title: 'Histórico', href: '/contratos/historico' },
-    ]
-  },
-  {
-    title: 'Financeiro',
-    icon: DollarSign,
-    children: [
-      { title: 'Receitas', href: '/financeiro/receitas' },
-      { title: 'Despesas', href: '/financeiro/despesas' },
-      { title: 'Relatórios', href: '/financeiro/relatorios' },
-    ]
-  },
-  {
     title: 'Configurações',
     href: '/configuracoes',
     icon: Settings,
@@ -77,7 +53,9 @@ export default function LayoutWithSidebar({ children }: { children: React.ReactN
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [expandedItems, setExpandedItems] = useState<string[]>([])
+  const [userMenuOpen, setUserMenuOpen] = useState(false)
   const pathname = usePathname()
+  const { data: session } = useSession()
 
   // Auto-expand menu item based on current path
   useEffect(() => {
@@ -95,6 +73,13 @@ export default function LayoutWithSidebar({ children }: { children: React.ReactN
         ? prev.filter(item => item !== title)
         : [...prev, title]
     )
+  }
+
+  const handleLogout = async () => {
+    await signOut({ 
+      callbackUrl: '/auth/login',
+      redirect: true 
+    })
   }
 
   const isActive = (href: string) => {
@@ -127,17 +112,17 @@ export default function LayoutWithSidebar({ children }: { children: React.ReactN
           )}>
             <div className={cn("flex items-center space-x-3", sidebarCollapsed ? "lg:hidden" : "")}>
               <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                <Building2 className="w-5 h-5 text-primary-foreground" />
+                <Box className="w-5 h-5 text-primary-foreground" />
               </div>
               <div>
-                <h1 className="text-lg font-semibold text-sidebar-foreground">Locação</h1>
-                <p className="text-xs text-sidebar-foreground/60">Sistema de Gestão</p>
+                <h1 className="text-lg font-semibold text-sidebar-foreground">Kaora</h1>
+                <p className="text-xs text-sidebar-foreground/60">Software de Gestão</p>
               </div>
             </div>
             
             {/* Logo only for collapsed state */}
             <div className={cn("w-8 h-8 bg-primary rounded-lg flex items-center justify-center", sidebarCollapsed ? "lg:block" : "lg:hidden")}>
-              <Building2 className="w-5 h-5 text-primary-foreground" />
+              <Box className="w-5 h-5 text-primary-foreground" />
             </div>
 
             {/* Collapse button - visible only on desktop */}
@@ -258,7 +243,7 @@ export default function LayoutWithSidebar({ children }: { children: React.ReactN
               
               <div className="hidden sm:block">
                 <h1 className="text-lg font-semibold text-foreground">
-                  Sistema de Locação
+                  Kaora
                 </h1>
               </div>
             </div>
@@ -274,14 +259,57 @@ export default function LayoutWithSidebar({ children }: { children: React.ReactN
               <ThemeToggle />
 
               {/* User profile */}
-              <div className="flex items-center space-x-3">
-                <div className="hidden sm:block text-right">
-                  <p className="text-sm font-medium text-foreground">João Silva</p>
-                  <p className="text-xs text-muted-foreground">Administrador</p>
-                </div>
-                <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-                  <User className="w-4 h-4 text-primary-foreground" />
-                </div>
+              <div className="relative">
+                <button
+                  onClick={() => setUserMenuOpen(!userMenuOpen)}
+                  className="flex items-center space-x-3 p-2 rounded-lg hover:bg-accent transition-colors"
+                >
+                  <div className="hidden sm:block text-right">
+                    <p className="text-sm font-medium text-foreground">
+                      {session?.user?.name || 'Usuário'}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {session?.user?.email || 'Administrador'}
+                    </p>
+                  </div>
+                  <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+                    <User className="w-4 h-4 text-primary-foreground" />
+                  </div>
+                  <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                </button>
+
+                {/* User dropdown menu */}
+                {userMenuOpen && (
+                  <>
+                    {/* Backdrop para fechar o menu */}
+                    <div 
+                      className="fixed inset-0 z-40"
+                      onClick={() => setUserMenuOpen(false)}
+                    />
+                    
+                    {/* Menu dropdown */}
+                    <div className="absolute right-0 mt-2 w-48 bg-card border border-border rounded-lg shadow-lg z-50">
+                      <div className="py-2">
+                        <div className="px-4 py-2 border-b border-border">
+                          <p className="text-sm font-medium text-foreground">
+                            {session?.user?.name || 'Usuário'}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {session?.user?.email || 'user@example.com'}
+                          </p>
+                        </div>
+                        
+                        <button
+                          onClick={handleLogout}
+                          className="flex items-center w-full px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors"
+                        >
+                          <LogOut className="w-4 h-4 mr-2" />
+                          Sair
+                        </button>
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           </div>

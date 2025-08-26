@@ -11,24 +11,10 @@ const stats = [
     changeType: 'increase',
   },
   {
-    name: 'Imóveis Disponíveis',
-    value: '45',
-    icon: Home,
-    change: '+3%',
-    changeType: 'increase',
-  },
-  {
     name: 'Receita Mensal',
     value: 'R$ 89.240',
     icon: DollarSign,
     change: '+8%',
-    changeType: 'increase',
-  },
-  {
-    name: 'Taxa de Ocupação',
-    value: '94%',
-    icon: TrendingUp,
-    change: '+2%',
     changeType: 'increase',
   },
 ]
@@ -122,22 +108,6 @@ export default function Dashboard() {
                 </div>
               </div>
             </Link>
-
-            <div className="group relative overflow-hidden rounded-xl bg-card p-6 shadow-sm border border-border opacity-50">
-              <div className="flex items-center space-x-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-50 dark:bg-gray-800">
-                  <Home className="h-5 w-5 text-gray-400" />
-                </div>
-                <div>
-                  <h3 className="font-medium text-foreground">
-                    Gerenciar Imóveis
-                  </h3>
-                  <p className="text-sm text-muted-foreground">
-                    Em breve...
-                  </p>
-                </div>
-              </div>
-            </div>
 
             <div className="group relative overflow-hidden rounded-xl bg-card p-6 shadow-sm border border-border opacity-50">
               <div className="flex items-center space-x-3">

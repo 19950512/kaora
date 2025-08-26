@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "sonner";
+import AuthProvider from "./providers.js";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -23,15 +24,17 @@ export default function RootLayout({
   return (
     <html lang="pt-BR" suppressHydrationWarning>
       <body className={`${inter.variable} font-sans antialiased`}>
-        <ThemeProvider>
-          {children}
-          <Toaster 
-            position="top-right"
-            richColors
-            expand={true}
-            duration={4000}
-          />
-        </ThemeProvider>
+        <AuthProvider>
+          <ThemeProvider>
+            {children}
+            <Toaster 
+              position="top-right"
+              richColors
+              expand={true}
+              duration={4000}
+            />
+          </ThemeProvider>
+        </AuthProvider>
       </body>
     </html>
   );
