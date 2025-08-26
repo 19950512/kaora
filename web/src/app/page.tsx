@@ -1,4 +1,7 @@
+'use client'
+
 import LayoutWithSidebar from '@/components/layout-with-sidebar'
+import ProtectedRoute from '@/components/auth/ProtectedRoute'
 import { Users, Home, TrendingUp, DollarSign } from 'lucide-react'
 import Link from 'next/link'
 
@@ -21,15 +24,16 @@ const stats = [
 
 export default function Dashboard() {
   return (
-    <LayoutWithSidebar>
-      <div className="space-y-6">
-        {/* Header */}
-        <div>
-          <h1 className="text-2xl font-bold text-foreground">Dashboard</h1>
-          <p className="text-muted-foreground">
-            Visão geral do sistema de locação
-          </p>
-        </div>
+    <ProtectedRoute>
+      <LayoutWithSidebar>
+        <div className="space-y-6">
+          {/* Header */}
+          <div>
+            <h1 className="text-2xl font-bold text-foreground">Dashboard</h1>
+            <p className="text-muted-foreground">
+              Visão geral do sistema
+            </p>
+          </div>
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -171,5 +175,6 @@ export default function Dashboard() {
         </div>
       </div>
     </LayoutWithSidebar>
+    </ProtectedRoute>
   )
 }

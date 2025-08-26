@@ -4,6 +4,7 @@ import { Eye, EyeOff } from "lucide-react";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { PublicRoute } from "@/components/auth/ProtectedRoute";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -13,12 +14,6 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const { data: session, status } = useSession();
   const router = useRouter();
-
-  useEffect(() => {
-    if (session) {
-      router.push("/dashboard");
-    }
-  }, [session, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,7 +43,7 @@ export default function LoginPage() {
       if (result?.error) {
         setError("E-mail ou senha inválidos.");
       } else {
-        router.push("/dashboard");
+        router.push("/");
       }
     } catch (err) {
       setError("Erro de conexão.");
@@ -59,7 +54,7 @@ export default function LoginPage() {
 
   const handleGoogleSignIn = async () => {
     try {
-      await signIn("google", { callbackUrl: "/dashboard" });
+      await signIn("google", { callbackUrl: "/" });
     } catch (error) {
       setError("Erro ao fazer login com Google.");
     }
@@ -70,7 +65,8 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-200 via-green-100 to-green-300 font-sans">
+    <PublicRoute>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-200 via-green-100 to-green-300 font-sans">
       <div className="bg-white/80 rounded-2xl shadow-2xl p-8 w-full max-w-lg border border-green-300 relative z-10">
         <div className="flex flex-col items-center mb-6">
           <img src="/globe.svg" alt="Logo" className="w-14 h-14 mb-2" />
@@ -148,5 +144,6 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+    </PublicRoute>
   );
 }

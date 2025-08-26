@@ -76,10 +76,29 @@ export default function LayoutWithSidebar({ children }: { children: React.ReactN
   }
 
   const handleLogout = async () => {
+    try {
+      // Primeiro, chamar nossa API de logout personalizada
+      const response = await fetch('/api/auth/logout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        console.log('✅ [LOGOUT] Logout do servidor executado com sucesso');
+      } else {
+        console.warn('⚠️ [LOGOUT] Falha no logout do servidor');
+      }
+    } catch (error) {
+      console.warn('⚠️ [LOGOUT] Erro ao chamar API de logout:', error);
+    }
+
+    // Sempre executar o signOut do NextAuth para limpar a sessão do cliente
     await signOut({ 
       callbackUrl: '/auth/login',
       redirect: true 
-    })
+    });
   }
 
   const isActive = (href: string) => {

@@ -30,9 +30,9 @@ export default function CompanyDataPage() {
         if (response.ok) {
           const result = await response.json();
           if (result.hasCompany) {
-            // Usuário já tem empresa, redirecionar para dashboard
+            // Usuário já tem empresa, redirecionar para a página principal
             console.log('✅ Usuário já possui empresa cadastrada, redirecionando...');
-            router.push("/dashboard");
+            router.push("/");
             return;
           }
         }
@@ -80,8 +80,8 @@ export default function CompanyDataPage() {
 
       if (response.ok) {
         alert('Empresa criada com sucesso! Redirecionando...');
-        // Redirecionar para dashboard após sucesso
-        router.push("/dashboard");
+        // Redirecionar para a página principal após sucesso
+        router.push("/");
       } else {
         alert(`Erro: ${result.error || 'Erro ao criar empresa. Tente novamente.'}`);
       }

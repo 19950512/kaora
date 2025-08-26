@@ -20,6 +20,17 @@ export interface AuthenticationResponse {
   error?: string;
 }
 
+export interface LogoutRequest {
+  userId: string;
+  sessionId?: string;
+}
+
+export interface LogoutResponse {
+  success: boolean;
+  message?: string;
+  error?: string;
+}
+
 export class AuthenticationService {
   constructor(private userRepository?: UserRepository) {}
 
@@ -170,6 +181,83 @@ export class AuthenticationService {
         success: false,
         error: 'Erro interno do servidor'
       };
+    }
+  }
+
+  async logout(request: LogoutRequest): Promise<LogoutResponse> {
+    try {
+      const { userId, sessionId } = request;
+
+      console.log('🚪 [AUTH_SERVICE] Iniciando logout:', { userId, sessionId });
+
+      // Se houver userRepository, usar ele para operações específicas
+      if (this.userRepository) {
+        // Aqui poderia invalidar sessões específicas no repositório
+        // Por exemplo: await this.userRepository.invalidateUserSessions(userId);
+      }
+
+      // Usar fallback direto ao banco para operações de logout
+      await this.logoutWithFallback(userId, sessionId);
+
+      console.log('✅ [AUTH_SERVICE] Logout realizado com sucesso para usuário:', userId);
+
+      return {
+        success: true,
+        message: 'Logout realizado com sucesso'
+      };
+
+    } catch (error: any) {
+      console.error('❌ [AUTH_SERVICE] Erro no logout:', error);
+      return {
+        success: false,
+        error: 'Erro interno do servidor durante logout'
+      };
+    }
+  }
+
+  private async logoutWithFallback(userId: string, sessionId?: string): Promise<void> {
+    try {
+      console.log('⚠️ [AUTH_SERVICE] Executando logout com fallback direto ao banco');
+      
+      // Importar diretamente do database provider como fallback
+      const infrastructureModule = await import('@kaora/infrastructure');
+      const prisma = infrastructureModule.DatabaseProvider.getInstance();
+      
+      // Registrar o logout no log de auditoria (se existir tabela de auditoria)
+      // Ou atualizar última atividade do usuário
+      await prisma.user.update({
+        where: { id: userId },
+        data: {
+          updatedAt: new Date()
+          // lastLogoutAt: new Date() - se houver este campo
+        }
+      });
+
+      // Se houver tabela de sessões, invalidar a sessão específica
+      if (sessionId) {
+        try {
+          // Tentar invalidar sessão se houver tabela de sessões
+          // await prisma.userSession.updateMany({
+          //   where: { 
+          //     userId: userId,
+          //     sessionId: sessionId,
+          //     active: true
+          //   },
+          //   data: { 
+          //     active: false,
+          //     logoutAt: new Date()
+          //   }
+          // });
+        } catch (sessionError) {
+          console.warn('⚠️ [AUTH_SERVICE] Não foi possível invalidar sessão específica:', sessionError);
+        }
+      }
+
+      console.log('✅ [AUTH_SERVICE] Logout via fallback concluído para usuário:', userId);
+
+    } catch (error: any) {
+      console.error('❌ [AUTH_SERVICE] Erro no fallback de logout:', error);
+      throw error;
     }
   }
 
