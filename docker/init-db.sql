@@ -126,22 +126,3 @@ CREATE TRIGGER update_users_updated_at
     BEFORE UPDATE ON users 
     FOR EACH ROW 
     EXECUTE FUNCTION update_updated_at_column();
-
--- =====================================================
--- DADOS INICIAIS (OPCIONAL)
--- =====================================================
-
--- Inserir empresa de exemplo (apenas para desenvolvimento)
-INSERT INTO business (id, name, email, document, phone, whatsapp) VALUES 
-    ('00000000-0000-0000-0000-000000000001', 'Kaora Sistemas', 'admin@kaora.com', '12345678000195', '11999999999', '11999999999')
-ON CONFLICT (document) DO NOTHING;
-
--- Inserir usuário admin de exemplo (apenas para desenvolvimento)
-INSERT INTO users (id, business_id, name, email, password_hash, document, phone) VALUES 
-    ('00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000001', 'Admin Kaora', 'admin@kaora.com', '$argon2id$v=19$m=65536,t=3,p=4$dummy', '12345678901', '11999999999')
-ON CONFLICT (business_id, email) DO NOTHING;
-
--- Log de inicialização
-INSERT INTO audit_logs (context, user_id, details) VALUES 
-    ('SYSTEM_INIT', '00000000-0000-0000-0000-000000000001', 'Database initialized with sample data')
-ON CONFLICT DO NOTHING;

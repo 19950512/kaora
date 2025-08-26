@@ -1,74 +1,205 @@
+import LayoutWithSidebar from '@/components/layout-with-sidebar'
+import { Users, Home, TrendingUp, DollarSign } from 'lucide-react'
+import Link from 'next/link'
 
-"use client";
-import { useSession, signOut } from "next-auth/react";
+const stats = [
+  {
+    name: 'Total de Clientes',
+    value: '127',
+    icon: Users,
+    change: '+12%',
+    changeType: 'increase',
+  },
+  {
+    name: 'Imóveis Disponíveis',
+    value: '45',
+    icon: Home,
+    change: '+3%',
+    changeType: 'increase',
+  },
+  {
+    name: 'Receita Mensal',
+    value: 'R$ 89.240',
+    icon: DollarSign,
+    change: '+8%',
+    changeType: 'increase',
+  },
+  {
+    name: 'Taxa de Ocupação',
+    value: '94%',
+    icon: TrendingUp,
+    change: '+2%',
+    changeType: 'increase',
+  },
+]
 
-export default function HomePage() {
-  const { data: session, status } = useSession();
-
-  if (status === "loading") {
-    return <div className="min-h-screen flex items-center justify-center">Carregando...</div>;
-  }
-
-  if (!session) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-200 via-green-100 to-green-300 p-4 md:p-8">
-        <div className="bg-white/80 rounded-2xl shadow-2xl p-8 md:p-12 w-full border border-green-300 text-center">
-          <h1 className="text-2xl md:text-3xl font-bold text-green-900 mb-4">Bem-vindo à Kaora</h1>
-          <p className="text-green-700 mb-6 text-lg">Faça login para acessar a plataforma.</p>
-          <div className="space-y-4 max-w-md mx-auto">
-            <a 
-              href="/auth/login" 
-              className="block w-full bg-gradient-to-r from-green-700 via-green-500 to-green-300 text-white py-4 rounded-lg font-bold text-lg shadow-lg hover:scale-105 transition-transform duration-150"
-            >
-              Entrar
-            </a>
-            <a 
-              href="/auth/create" 
-              className="block w-full bg-white border border-green-300 text-green-900 py-4 rounded-lg font-bold text-lg shadow hover:bg-green-100 transition-colors duration-150"
-            >
-              Criar Conta
-            </a>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
+export default function Dashboard() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-200 via-green-100 to-green-300 p-4 md:p-8">
-      <div className="w-full">
-        <header className="bg-white/80 rounded-2xl shadow-2xl p-6 mb-8 border border-green-300">
-          <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-3xl font-bold text-green-900">Dashboard Kaora</h1>
-              <p className="text-green-700">Bem-vindo, {session.user?.name || session.user?.email}</p>
-            </div>
-            <button
-              onClick={() => signOut({ callbackUrl: "/auth/login" })}
-              className="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-lg font-semibold transition-colors"
+    <LayoutWithSidebar>
+      <div className="space-y-6">
+        {/* Header */}
+        <div>
+          <h1 className="text-2xl font-bold text-foreground">Dashboard</h1>
+          <p className="text-muted-foreground">
+            Visão geral do sistema de locação
+          </p>
+        </div>
+
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          {stats.map((item) => {
+            const Icon = item.icon
+            return (
+              <div
+                key={item.name}
+                className="relative overflow-hidden rounded-xl bg-card p-6 shadow-sm border border-border hover:shadow-md transition-shadow"
+              >
+                <div className="flex items-center">
+                  <div className="flex-shrink-0">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
+                      <Icon className="h-6 w-6 text-primary" />
+                    </div>
+                  </div>
+                  <div className="ml-4 flex-1">
+                    <dl>
+                      <dt className="text-sm font-medium text-muted-foreground">
+                        {item.name}
+                      </dt>
+                      <dd className="flex items-baseline">
+                        <div className="text-2xl font-semibold text-foreground">
+                          {item.value}
+                        </div>
+                        <div className="ml-2 flex items-baseline text-sm font-semibold text-green-600">
+                          {item.change}
+                        </div>
+                      </dd>
+                    </dl>
+                  </div>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+
+        {/* Quick Actions */}
+        <div className="space-y-4">
+          <h2 className="text-lg font-semibold text-foreground">Ações Rápidas</h2>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <Link
+              href="/clientes/novo"
+              className="group relative overflow-hidden rounded-xl bg-card p-6 shadow-sm border border-border hover:shadow-md transition-all duration-200 hover:scale-[1.02]"
             >
-              Sair
-            </button>
+              <div className="flex items-center space-x-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50 dark:bg-blue-900/20 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/30 transition-colors">
+                  <Users className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                </div>
+                <div>
+                  <h3 className="font-medium text-foreground group-hover:text-primary transition-colors">
+                    Cadastrar Cliente
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    Adicionar novo cliente
+                  </p>
+                </div>
+              </div>
+            </Link>
+
+            <Link
+              href="/clientes"
+              className="group relative overflow-hidden rounded-xl bg-card p-6 shadow-sm border border-border hover:shadow-md transition-all duration-200 hover:scale-[1.02]"
+            >
+              <div className="flex items-center space-x-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-green-50 dark:bg-green-900/20 group-hover:bg-green-100 dark:group-hover:bg-green-900/30 transition-colors">
+                  <Users className="h-5 w-5 text-green-600 dark:text-green-400" />
+                </div>
+                <div>
+                  <h3 className="font-medium text-foreground group-hover:text-primary transition-colors">
+                    Gerenciar Clientes
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    Visualizar e editar
+                  </p>
+                </div>
+              </div>
+            </Link>
+
+            <div className="group relative overflow-hidden rounded-xl bg-card p-6 shadow-sm border border-border opacity-50">
+              <div className="flex items-center space-x-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-50 dark:bg-gray-800">
+                  <Home className="h-5 w-5 text-gray-400" />
+                </div>
+                <div>
+                  <h3 className="font-medium text-foreground">
+                    Gerenciar Imóveis
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    Em breve...
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="group relative overflow-hidden rounded-xl bg-card p-6 shadow-sm border border-border opacity-50">
+              <div className="flex items-center space-x-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-50 dark:bg-gray-800">
+                  <DollarSign className="h-5 w-5 text-gray-400" />
+                </div>
+                <div>
+                  <h3 className="font-medium text-foreground">
+                    Relatórios
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    Em breve...
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="group relative overflow-hidden rounded-xl bg-card p-6 shadow-sm border border-border opacity-50">
+              <div className="flex items-center space-x-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-50 dark:bg-gray-800">
+                  <TrendingUp className="h-5 w-5 text-gray-400" />
+                </div>
+                <div>
+                  <h3 className="font-medium text-foreground">
+                    Analytics
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    Em breve...
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
-        </header>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
-          <div className="bg-white/80 rounded-xl shadow-lg p-6 border border-green-200">
-            <h2 className="text-xl font-bold text-green-900 mb-4">Empresas</h2>
-            <p className="text-green-700">Gerencie suas empresas e dados corporativos.</p>
-          </div>
-          
-          <div className="bg-white/80 rounded-xl shadow-lg p-6 border border-green-200">
-            <h2 className="text-xl font-bold text-green-900 mb-4">Usuários</h2>
-            <p className="text-green-700">Administre usuários e permissões do sistema.</p>
-          </div>
-          
-          <div className="bg-white/80 rounded-xl shadow-lg p-6 border border-green-200">
-            <h2 className="text-xl font-bold text-green-900 mb-4">Relatórios</h2>
-            <p className="text-green-700">Visualize relatórios e métricas importantes.</p>
+        </div>
+
+        {/* Recent Activity */}
+        <div className="space-y-4">
+          <h2 className="text-lg font-semibold text-foreground">Atividade Recente</h2>
+          <div className="rounded-xl bg-card border border-border p-6">
+            <div className="space-y-4">
+              <div className="flex items-center space-x-3">
+                <div className="h-2 w-2 bg-green-500 rounded-full"></div>
+                <p className="text-sm text-muted-foreground">
+                  <span className="font-medium text-foreground">João Silva</span> foi cadastrado há 2 horas
+                </p>
+              </div>
+              <div className="flex items-center space-x-3">
+                <div className="h-2 w-2 bg-blue-500 rounded-full"></div>
+                <p className="text-sm text-muted-foreground">
+                  <span className="font-medium text-foreground">Contrato #1234</span> foi renovado há 4 horas
+                </p>
+              </div>
+              <div className="flex items-center space-x-3">
+                <div className="h-2 w-2 bg-orange-500 rounded-full"></div>
+                <p className="text-sm text-muted-foreground">
+                  <span className="font-medium text-foreground">Apartamento 102</span> foi atualizado há 6 horas
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  );
+    </LayoutWithSidebar>
+  )
 }

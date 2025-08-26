@@ -1,5 +1,19 @@
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
 import "./globals.css";
-import AuthProvider from "./providers.js";
+import { ThemeProvider } from "@/components/theme-provider";
+import { Toaster } from "sonner";
+
+const inter = Inter({
+  subsets: ["latin"],
+  display: 'swap',
+  variable: '--font-inter',
+});
+
+export const metadata: Metadata = {
+  title: "Sistema de Locação",
+  description: "Sistema completo para gerenciamento de locação de imóveis",
+};
 
 export default function RootLayout({
   children,
@@ -7,9 +21,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-BR">
-      <body className="antialiased">
-        <AuthProvider>{children}</AuthProvider>
+    <html lang="pt-BR" suppressHydrationWarning>
+      <body className={`${inter.variable} font-sans antialiased`}>
+        <ThemeProvider>
+          {children}
+          <Toaster 
+            position="top-right"
+            richColors
+            expand={true}
+            duration={4000}
+          />
+        </ThemeProvider>
       </body>
     </html>
   );
