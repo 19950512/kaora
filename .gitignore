@@ -23,12 +23,6 @@ postgres_data/
 packages/infrastructure/prisma/generated/
 /src/generated/prisma
 
-# Package managers
-.yarn
-.pnpm-store
-pnpm-lock.yaml
-package-lock.json
-
 # Build outputs
 dist
 .next
