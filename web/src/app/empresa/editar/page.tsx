@@ -569,10 +569,10 @@ function EmpresaEditarContent() {
 export default function EmpresaEditarPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="flex items-center space-x-2">
-          <Loader2 className="h-6 w-6 animate-spin text-indigo-600" />
-          <span className="text-gray-600">Carregando...</span>
+          <Loader2 className="h-6 w-6 animate-spin text-primary" />
+          <span className="text-muted-foreground">Carregando...</span>
         </div>
       </div>
     }>

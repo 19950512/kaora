@@ -114,31 +114,34 @@ export default function LayoutWithSidebar({ children }: { children: React.ReactN
       {/* Mobile sidebar backdrop */}
       {sidebarOpen && (
         <div 
-          className="fixed inset-0 z-40 bg-black bg-opacity-50 transition-opacity lg:hidden" 
+          className="fixed inset-0 z-40 bg-black/50 transition-opacity lg:hidden" 
           onClick={() => setSidebarOpen(false)}
         />
       )}
 
       {/* Sidebar */}
       <div className={cn(
-        'fixed inset-y-0 left-0 z-50 bg-sidebar border-r border-sidebar-border transition-all duration-300 ease-in-out lg:translate-x-0',
+        'fixed inset-y-0 left-0 z-50 border-r transition-all duration-300 ease-in-out lg:translate-x-0',
+        'bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700',
         sidebarOpen ? 'translate-x-0' : '-translate-x-full',
         sidebarCollapsed ? 'lg:w-16' : 'lg:w-64',
         'w-64'
-      )}>
-        <div className="flex flex-col h-full">
+      )}
+      style={{backgroundColor: 'hsl(var(--background))', borderColor: 'hsl(var(--border))'}}>
+        <div className="flex flex-col h-full bg-white dark:bg-gray-900" style={{backgroundColor: 'hsl(var(--background))'}}>{/* Container principal */}
           {/* Sidebar header */}
           <div className={cn(
-            "flex items-center justify-between h-16 px-4 border-b border-sidebar-border",
+            "flex items-center justify-between h-16 px-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900",
             sidebarCollapsed ? "lg:justify-center lg:px-2" : ""
-          )}>
+          )}
+          style={{backgroundColor: 'hsl(var(--background))', borderColor: 'hsl(var(--border))'}}>
             <div className={cn("flex items-center space-x-3", sidebarCollapsed ? "lg:hidden" : "")}>
               <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
                 <Box className="w-5 h-5 text-primary-foreground" />
               </div>
               <div>
-                <h1 className="text-lg font-semibold text-sidebar-foreground">Kaora</h1>
-                <p className="text-xs text-sidebar-foreground/60">Software de Gestão</p>
+                <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100" style={{color: 'hsl(var(--foreground))'}}>Kaora</h1>
+                <p className="text-xs text-gray-600 dark:text-gray-400" style={{color: 'hsl(var(--muted-foreground))'}}>Software de Gestão</p>
               </div>
             </div>
             
@@ -151,37 +154,38 @@ export default function LayoutWithSidebar({ children }: { children: React.ReactN
             <button
               onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
               className={cn(
-                "hidden lg:flex p-1 rounded-md hover:bg-sidebar-accent transition-colors",
+                "hidden lg:flex p-1 rounded-md hover:bg-accent transition-colors",
                 sidebarCollapsed ? "lg:hidden" : ""
               )}
               title={sidebarCollapsed ? "Expandir menu" : "Colapsar menu"}
             >
-              <ChevronLeft className="w-5 h-5 text-sidebar-foreground" />
+              <ChevronLeft className="w-5 h-5 text-muted-foreground" />
             </button>
 
             {/* Expand button for collapsed state */}
             <button
               onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
               className={cn(
-                "hidden p-1 rounded-md hover:bg-sidebar-accent transition-colors absolute right-2 top-4",
+                "hidden p-1 rounded-md hover:bg-accent transition-colors absolute right-2 top-4",
                 sidebarCollapsed ? "lg:flex" : "lg:hidden"
               )}
               title="Expandir menu"
             >
-              <ChevronRight className="w-4 h-4 text-sidebar-foreground" />
+              <ChevronRight className="w-4 h-4 text-muted-foreground" />
             </button>
 
             {/* Close button - visible only on mobile */}
             <button
               onClick={() => setSidebarOpen(false)}
-              className="lg:hidden p-1 rounded-md hover:bg-sidebar-accent"
+              className="lg:hidden p-1 rounded-md hover:bg-accent"
             >
-              <X className="w-5 h-5 text-sidebar-foreground" />
+              <X className="w-5 h-5 text-muted-foreground" />
             </button>
           </div>
 
           {/* Navigation */}
-          <nav className={cn("flex-1 py-4 space-y-2 overflow-y-auto sidebar-scroll", sidebarCollapsed ? "lg:px-2" : "px-4")}>
+          <nav className={cn("flex-1 py-4 space-y-2 overflow-y-auto sidebar-scroll bg-white dark:bg-gray-900", sidebarCollapsed ? "lg:px-2" : "px-4")}
+          style={{backgroundColor: 'hsl(var(--background))'}}>
             {menuItems.map((item) => (
               <div key={item.title}>
                 {item.href ? (
@@ -190,8 +194,8 @@ export default function LayoutWithSidebar({ children }: { children: React.ReactN
                     className={cn(
                       'flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors group',
                       isActive(item.href)
-                        ? 'bg-sidebar-accent text-sidebar-accent-foreground'
-                        : 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
+                        ? 'bg-accent text-accent-foreground'
+                        : 'text-foreground hover:bg-accent hover:text-accent-foreground',
                       sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''
                     )}
                     onClick={() => setSidebarOpen(false)}
@@ -206,7 +210,7 @@ export default function LayoutWithSidebar({ children }: { children: React.ReactN
                       onClick={() => toggleExpanded(item.title)}
                       className={cn(
                         'flex items-center justify-between w-full px-3 py-2 text-sm font-medium rounded-lg transition-colors group',
-                        'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
+                        'text-foreground hover:bg-accent hover:text-accent-foreground',
                         sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''
                       )}
                       title={sidebarCollapsed ? item.title : undefined}
@@ -232,8 +236,8 @@ export default function LayoutWithSidebar({ children }: { children: React.ReactN
                             className={cn(
                               'block px-3 py-2 text-sm rounded-lg transition-colors',
                               isActive(child.href)
-                                ? 'bg-sidebar-accent text-sidebar-accent-foreground font-medium'
-                                : 'text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
+                                ? 'bg-accent text-accent-foreground font-medium'
+                                : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
                             )}
                             onClick={() => setSidebarOpen(false)}
                           >
@@ -305,25 +309,26 @@ export default function LayoutWithSidebar({ children }: { children: React.ReactN
                   <>
                     {/* Backdrop para fechar o menu */}
                     <div 
-                      className="fixed inset-0 z-40"
+                      className="fixed inset-0 z-50"
                       onClick={() => setUserMenuOpen(false)}
                     />
                     
                     {/* Menu dropdown */}
-                    <div className="absolute right-0 mt-2 w-48 bg-card border border-border rounded-lg shadow-lg z-50">
-                      <div className="py-2">
-                        <div className="px-4 py-2 border-b border-border">
-                          <p className="text-sm font-medium text-foreground">
+                    <div className="absolute right-0 mt-2 w-48 rounded-lg shadow-lg z-[60] bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700" style={{backgroundColor: 'hsl(var(--background))', borderColor: 'hsl(var(--border))'}}>
+                      <div className="py-2 bg-white dark:bg-gray-900 rounded-lg" style={{backgroundColor: 'hsl(var(--background))'}}>
+                        <div className="px-4 py-2 border-b border-gray-200 dark:border-gray-700" style={{backgroundColor: 'hsl(var(--background))', borderColor: 'hsl(var(--border))'}}>
+                          <p className="text-sm font-medium text-gray-900 dark:text-gray-100" style={{color: 'hsl(var(--foreground))'}}>
                             {session?.user?.name || 'Usuário'}
                           </p>
-                          <p className="text-xs text-muted-foreground">
+                          <p className="text-xs text-gray-600 dark:text-gray-400" style={{color: 'hsl(var(--muted-foreground))'}}>
                             {session?.user?.email || 'user@example.com'}
                           </p>
                         </div>
                         
                         <button
                           onClick={handleLogout}
-                          className="flex items-center w-full px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors"
+                          className="flex items-center w-full px-4 py-2 text-sm text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                          style={{backgroundColor: 'hsl(var(--background))', color: 'hsl(var(--foreground))'}}
                         >
                           <LogOut className="w-4 h-4 mr-2" />
                           Sair
