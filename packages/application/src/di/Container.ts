@@ -37,6 +37,7 @@ export class DIContainer implements Container {
 export const TOKENS = {
   // Infrastructure
   PRISMA_CLIENT: 'PrismaClient',
+  STORE: 'Store',
   
   // Repositories
   BUSINESS_REPOSITORY: 'BusinessRepository',

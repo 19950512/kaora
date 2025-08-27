@@ -10,10 +10,11 @@
   "packageManager": "yarn@4.9.3",
   "devDependencies": {
     "@types/node": "^20.10.0",
-    "prisma": "^5.7.0"
+    "prisma": "6.14.0"
   },
   "dependencies": {
-    "@prisma/client": "^5.7.0",
+    "@prisma/client": "6.14.0",
+    "dotenv": "^17.2.1",
     "lucide-react": "^0.541.0",
     "next-auth": "^4.24.11",
     "react": "^19.1.1",

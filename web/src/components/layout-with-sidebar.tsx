@@ -40,8 +40,11 @@ const menuItems = [
   },
   {
     title: 'Configurações',
-    href: '/configuracoes',
     icon: Settings,
+    children: [
+      { title: 'Informações da Empresa', href: '/empresa/info' },
+      { title: 'Usuários', href: '/usuarios' },
+    ]
   },
 ]
 
@@ -248,7 +251,7 @@ export default function LayoutWithSidebar({ children }: { children: React.ReactN
       </div>
 
       {/* Main content */}
-      <div className={cn("transition-all duration-300", sidebarCollapsed ? "lg:pl-16" : "lg:pl-64")}>
+      <div className={cn("transition-all duration-300 min-h-screen bg-background", sidebarCollapsed ? "lg:pl-16" : "lg:pl-64")}>
         {/* Top header */}
         <header className="bg-card/80 backdrop-blur-md border-b border-border sticky top-0 z-30">
           <div className="flex items-center justify-between h-16 px-4 sm:px-6">
@@ -335,7 +338,7 @@ export default function LayoutWithSidebar({ children }: { children: React.ReactN
         </header>
 
         {/* Page content */}
-        <main className="p-6">
+        <main className="p-6 bg-background text-foreground">
           {children}
         </main>
       </div>

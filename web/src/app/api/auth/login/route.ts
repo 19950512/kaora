@@ -26,10 +26,10 @@ export async function POST(request: Request) {
       console.log('🔍 [LOGIN] Tentativa de login:', email);
       
       // Usar a Clean Architecture - consumir o AuthenticationService
-      const { getContainer, TOKENS } = require('@kaora/application');
+      const { getContainer, TOKENS, AuthenticationService } = await import('@kaora/application');
       const container = getContainer();
       
-      const authService = container.get(TOKENS.AUTH_SERVICE);
+      const authService = container.get<InstanceType<typeof AuthenticationService>>(TOKENS.AUTH_SERVICE);
       
       // Delegar toda a lógica de autenticação para o serviço
       const result = await authService.authenticate({ email, password });

@@ -12,10 +12,10 @@ export async function GET(request: Request) {
     }
 
     try {
-      const { getContainer, TOKENS } = await import('@kaora/application');
+      const { getContainer, TOKENS, BusinessApplicationService } = await import('@kaora/application');
       const container = getContainer();
       
-      const businessService = container.get(TOKENS.BUSINESS_APP_SERVICE);
+      const businessService = container.get<InstanceType<typeof BusinessApplicationService>>(TOKENS.BUSINESS_APP_SERVICE);
       
       // Verificar se existe uma empresa com este email de responsável
       const result = await businessService.checkUserBusiness(email);

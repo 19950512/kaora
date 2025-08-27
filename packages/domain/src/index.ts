@@ -31,6 +31,10 @@ export { AuditLogRepository } from './shared/audit/AuditLogRepository';
 // Core interfaces
 export { Email as IEmail } from './core/interfaces/email/Email';
 export { Cache } from './core/interfaces/cache/Cache';
+export { Store } from './core/interfaces/store/Store';
+
+// Configuration
+export { ENV } from './config/env';
 
 // Enums
 export { ContextEnum } from './shared/audit/ContextEnum';

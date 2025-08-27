@@ -30,6 +30,12 @@ export function createContainer(useMockDatabase = false): DIContainer {
     return new PrismaAuditLogRepository(prisma);
   });
 
+  // 📦 Store (R2)
+  container.register(TOKENS.STORE, () => {
+    const { R2Store } = require('@kaora/infrastructure');
+    return new R2Store();
+  }, true); // Singleton
+
   // 🎯 Use Cases
   container.register(TOKENS.CREATE_BUSINESS, () => {
     const { CreateBusiness } = require('@kaora/domain');
@@ -44,8 +50,11 @@ export function createContainer(useMockDatabase = false): DIContainer {
   container.register(TOKENS.BUSINESS_APP_SERVICE, () => {
     const { BusinessApplicationService } = require('@kaora/application');
     const createBusinessUseCase = container.get(TOKENS.CREATE_BUSINESS);
+    const userRepository = container.get(TOKENS.USER_REPOSITORY);
+    const businessRepository = container.get(TOKENS.BUSINESS_REPOSITORY);
+    const store = container.get(TOKENS.STORE);
     
-    return new BusinessApplicationService(createBusinessUseCase);
+    return new BusinessApplicationService(createBusinessUseCase, userRepository, businessRepository, store);
   });
 
   // 🔐 Authentication Service

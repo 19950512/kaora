@@ -13,6 +13,7 @@ export class Business {
   public document: Document;
   public phone: Phone;
   public whatsapp: Whatsapp;
+  public logoUrl?: string;
   public createdAt: Data;
   public updatedAt: Data;
 
@@ -23,15 +24,17 @@ export class Business {
     document: string;
     phone: string;
     whatsapp: string;
+    logoUrl?: string;
     createdAt?: string;
     updatedAt?: string;
   }) {
-    this.id = new UUID();
+    this.id = new UUID(params.id);
     this.name = new FullName(params.name);
     this.email = new Email(params.email);
     this.document = new Document(params.document);
     this.phone = new Phone(params.phone);
     this.whatsapp = new Whatsapp(params.whatsapp);
+    this.logoUrl = params.logoUrl;
     this.createdAt = new Data(params.createdAt);
     this.updatedAt = new Data(params.updatedAt);
   }
@@ -53,6 +56,9 @@ export class Business {
     }
     if (this.whatsapp !== oldData.whatsapp) {
       changedData.whatsapp = this.whatsapp;
+    }
+    if (this.logoUrl !== oldData.logoUrl) {
+      changedData.logoUrl = this.logoUrl;
     }
 
     return changedData;

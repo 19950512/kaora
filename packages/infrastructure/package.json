@@ -12,12 +12,13 @@
     "prisma:studio": "prisma studio --schema=./prisma/schema.prisma"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.876.0",
     "@kaora/domain": "workspace:*",
-    "@prisma/client": "^6.14.0"
+    "@prisma/client": "6.14.0"
   },
   "devDependencies": {
     "@types/node": "^20.10.0",
-    "prisma": "^6.14.0",
+    "prisma": "6.14.0",
     "typescript": "^5.0.0"
   }
 }

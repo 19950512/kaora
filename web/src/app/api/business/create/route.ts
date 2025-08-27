@@ -14,10 +14,10 @@ export async function POST(request: Request) {
 
     try {
 
-      const { getContainer, TOKENS } = await import('@kaora/application');
+      const { getContainer, TOKENS, BusinessApplicationService } = await import('@kaora/application');
       const container = getContainer();
       
-      const businessService = container.get(TOKENS.BUSINESS_APP_SERVICE);
+      const businessService = container.get<InstanceType<typeof BusinessApplicationService>>(TOKENS.BUSINESS_APP_SERVICE);
       
       const result = await businessService.createBusiness({
         businessName,
