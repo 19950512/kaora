@@ -71,17 +71,17 @@ COPY --from=builder /app/web/public ./web/public
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/.yarnrc.yml ./.yarnrc.yml
 
-# Remove dependências de desenvolvimento desnecessárias
+# Remove apenas dependências de desenvolvimento específicas
 RUN rm -rf node_modules/@types \
   && rm -rf node_modules/typescript \
-  && rm -rf node_modules/eslint* \
+  && rm -rf node_modules/eslint \
+  && rm -rf node_modules/@eslint \
   && rm -rf node_modules/@typescript-eslint \
   && rm -rf node_modules/prettier \
-  && rm -rf node_modules/@next/env \
   && find node_modules -name "*.d.ts" -delete \
   && find node_modules -name "*.map" -delete \
   && find node_modules -name "LICENSE*" -delete \
-  && find node_modules -name "*.md" -delete
+  && find node_modules -name "README.md" -delete
 
 # Define variáveis de ambiente para produção
 ENV NODE_ENV=production
