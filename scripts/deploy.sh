@@ -109,7 +109,7 @@ rebuild_prod() {
             echo -n "."
             sleep 2
             
-            if [[ $i -eq 40 ]]; then
+            if [[ $i -eq 10 ]]; then
                 error "❌ Aplicação não respondeu dentro do tempo limite"
                 warn "Verificando logs da aplicação:"
                 docker compose -f docker-compose.prod.yml logs --tail=20 kaora-app
@@ -120,7 +120,7 @@ rebuild_prod() {
 
     if [ "$SERVICE_NAME" = "redis" ]; then
         log "Verificando Redis..."
-        for i in {1..15}; do
+        for i in {1..5}; do
             if docker compose -f docker-compose.prod.yml exec -T redis redis-cli ping >/dev/null 2>&1; then
                 log "✅ Redis está respondendo!"
                 break

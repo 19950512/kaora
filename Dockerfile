@@ -1,18 +1,17 @@
-# ==========================================
-# DOCKERFILE OTIMIZADO PARA PRODUÇÃO - KAORA
-# ==========================================
-
-# Etapa 1: Instala dependências e faz build
+# Etapa 1: Instala dependências completas e faz build
 FROM node:20-alpine AS builder
 WORKDIR /app
 
-# Instala dependências necessárias para o Alpine
+# Instala dependências necessárias no Alpine
 RUN apk add --no-cache libc6-compat
 
-# Instala o yarn globalmente
-RUN corepack enable && corepack prepare yarn@4.9.3 --activate
+# Ativa Corepack para gerenciar Yarn
+RUN corepack enable
 
-# Copia apenas os arquivos de dependências do workspace
+# Força o uso do Yarn 4.x (caso não tenha sido feito corretamente)
+RUN corepack prepare yarn@4.9.3 --activate
+
+# Copia arquivos do Yarn e dependências do workspace
 COPY package.json yarn.lock* .yarnrc.yml ./
 COPY .yarn ./.yarn
 COPY packages/domain/package.json ./packages/domain/
@@ -20,13 +19,13 @@ COPY packages/application/package.json ./packages/application/
 COPY packages/infrastructure/package.json ./packages/infrastructure/
 COPY web/package.json ./web/
 
-# Instala todas as dependências
+# Instala todas dependências do workspace
 RUN yarn install --immutable
 
-# Copia todo o código do projeto
+# Copia o código fonte completo
 COPY . .
 
-# Gera o cliente Prisma ANTES dos builds
+# Gera cliente Prisma antes dos builds
 RUN yarn workspace @kaora/infrastructure run prisma:generate
 
 # Build dos packages internos
@@ -37,25 +36,50 @@ RUN yarn workspace @kaora/application run build
 # Build da aplicação Next.js
 RUN yarn workspace web run build
 
-# Remove cache do Next.js para reduzir imagem final
+# Remove cache do Next.js para diminuir tamanho
 RUN rm -rf web/.next/cache
 
-# Etapa 2: Runner final para produção
+# Etapa 2: Instala apenas dependências de produção
+FROM node:20-alpine AS deps
+WORKDIR /app
+
+# Ativa Corepack para Yarn
+RUN corepack enable
+
+# Força o uso do Yarn 4.x (caso não tenha sido feito corretamente)
+RUN corepack prepare yarn@4.9.3 --activate
+
+# Copia arquivos necessários para dependências
+COPY package.json yarn.lock* .yarnrc.yml ./
+COPY .yarn ./.yarn
+
+# Instala apenas dependências de produção usando o foco no workspace
+RUN yarn workspaces focus --production
+
+# Etapa 3: Runner final para produção
 FROM node:20-alpine AS runner
 
-# Instala dependências necessárias para o Alpine
 RUN apk add --no-cache libc6-compat curl
 
-# Criação de usuário seguro
+# Ativa Corepack para Yarn no runner
+RUN corepack enable
+RUN corepack prepare yarn@4.9.3 --activate
+
+# Cria usuário não-root
 RUN addgroup -g 1001 -S nodejs \
   && adduser -S nextjs -u 1001 -G nodejs
 
 WORKDIR /app
 
-# Copia apenas os node_modules necessários do builder
-COPY --from=builder /app/node_modules ./node_modules
+# Copia node_modules de produção
+COPY --from=deps /app/node_modules ./node_modules
 
-# Copia builds dos packages internos
+# Copia arquivos do Yarn workspace
+COPY --from=builder /app/package.json ./package.json
+COPY --from=builder /app/.yarnrc.yml ./.yarnrc.yml
+COPY --from=builder /app/.yarn ./.yarn
+
+# Copia build dos packages internos
 COPY --from=builder /app/packages/domain/dist ./packages/domain/dist
 COPY --from=builder /app/packages/domain/package.json ./packages/domain/
 COPY --from=builder /app/packages/application/dist ./packages/application/dist
@@ -64,14 +88,12 @@ COPY --from=builder /app/packages/infrastructure/dist ./packages/infrastructure/
 COPY --from=builder /app/packages/infrastructure/package.json ./packages/infrastructure/
 COPY --from=builder /app/packages/infrastructure/prisma ./packages/infrastructure/prisma
 
-# Copia arquivos essenciais do build Next.js
+# Copia build da aplicação Next.js e arquivos públicos
 COPY --from=builder /app/web/.next/standalone ./
 COPY --from=builder /app/web/.next/static ./web/.next/static
 COPY --from=builder /app/web/public ./web/public
-COPY --from=builder /app/package.json ./package.json
-COPY --from=builder /app/.yarnrc.yml ./.yarnrc.yml
 
-# Remove apenas dependências de desenvolvimento específicas
+# Remove dependências dev para deixar a imagem enxuta
 RUN rm -rf node_modules/@types \
   && rm -rf node_modules/typescript \
   && rm -rf node_modules/eslint \
@@ -83,16 +105,17 @@ RUN rm -rf node_modules/@types \
   && find node_modules -name "LICENSE*" -delete \
   && find node_modules -name "README.md" -delete
 
-# Define variáveis de ambiente para produção
+# Define variáveis de ambiente
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV PORT=9990
+ENV HOSTNAME=0.0.0.0
 
-# Muda para o usuário não-root
+# Muda para usuário não-root
 USER nextjs
 
 # Expõe a porta da aplicação
 EXPOSE 9990
 
-# Comando para iniciar a aplicação
-CMD ["npx", "next", "start", "-p", "9990"]
+# Altere o comando para usar o Next.js standalone
+CMD ["node", "web/server.js"]
