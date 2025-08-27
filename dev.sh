@@ -79,7 +79,7 @@ sleep 3
 # Verificar se PostgreSQL está rodando
 if ! docker ps | grep -q "kaora-postgres"; then
     echo -e "${RED}❌ Falha ao iniciar PostgreSQL!${NC}"
-    docker-compose logs
+    docker compose logs
     exit 1
 fi
 
@@ -192,7 +192,7 @@ echo -e "  🗄️  PostgreSQL:  ${GREEN}localhost:9069${NC}"
 echo -e "  📋 API:         ${GREEN}http://localhost:3001/api/business/create${NC}"
 echo ""
 echo -e "${BLUE}🔧 Comandos úteis:${NC}"
-echo -e "  🛑 Parar ambiente:   ${YELLOW}docker-compose down && pkill -f 'next dev'${NC}"
+echo -e "  🛑 Parar ambiente:   ${YELLOW}docker compose down && pkill -f 'next dev'${NC}"
 echo -e "  📊 Ver logs:         ${YELLOW}tail -f dev.log${NC}"
 echo -e "  🗃️  Prisma Studio:    ${YELLOW}cd packages/infrastructure && yarn prisma studio${NC}"
 echo -e "  🧪 Testar API:       ${YELLOW}./test-api-domain.sh${NC}"
@@ -205,7 +205,7 @@ echo ""
 echo -e "${YELLOW}💡 Pressione Ctrl+C para parar o desenvolvimento${NC}"
 
 # Manter script rodando e monitorar processos
-trap 'echo -e "\n${RED}🛑 Parando ambiente...${NC}"; docker-compose down; pkill -f "next dev"; exit 0' INT
+trap 'echo -e "\n${RED}🛑 Parando ambiente...${NC}"; docker compose down; pkill -f "next dev"; exit 0' INT
 
 # Loop infinito para manter script rodando
 while true; do

@@ -1,0 +1,100 @@
+# ==========================================
+# DOCKERFILE ULTRA OTIMIZADO - KAORA
+# ==========================================
+# Versão alternativa usando distroless para runtime ainda menor
+
+# Etapa 1: Instala dependências completas para build
+FROM node:20-alpine AS builder
+WORKDIR /app
+
+# Instala dependências necessárias para o Alpine
+RUN apk add --no-cache libc6-compat
+
+# Instala o yarn globalmente
+RUN corepack enable && corepack prepare yarn@4.9.3 --activate
+
+# Copia apenas os arquivos de dependências do workspace
+COPY package.json yarn.lock* .yarnrc.yml ./
+COPY .yarn ./.yarn
+COPY packages/domain/package.json ./packages/domain/
+COPY packages/application/package.json ./packages/application/
+COPY packages/infrastructure/package.json ./packages/infrastructure/
+COPY web/package.json ./web/
+
+# Instala todas as dependências (dev + prod)
+RUN yarn install --immutable
+
+# Copia todo o código do projeto
+COPY . .
+
+# Build dos packages internos
+RUN yarn workspace @kaora/domain run build
+RUN yarn workspace @kaora/infrastructure run build
+RUN yarn workspace @kaora/application run build
+
+# Gera o cliente Prisma
+RUN yarn workspace @kaora/infrastructure run prisma:generate
+
+# Build da aplicação Next.js
+RUN yarn workspace web run build
+
+# Remove cache e arquivos desnecessários
+RUN rm -rf web/.next/cache
+RUN rm -rf node_modules/.cache
+RUN rm -rf packages/*/node_modules
+
+# Etapa 2: Preparar dependências otimizadas
+FROM node:20-alpine AS deps
+WORKDIR /app
+
+# Instala dependências necessárias para o Alpine
+RUN apk add --no-cache libc6-compat
+
+# Copia node_modules do builder e otimiza
+COPY --from=builder /app/node_modules ./node_modules
+
+# Remove arquivos desnecessários das dependências
+RUN find node_modules -name "*.md" -delete || true
+RUN find node_modules -name "LICENSE*" -delete || true
+RUN find node_modules -name "CHANGELOG*" -delete || true
+RUN find node_modules -name "*.map" -delete || true
+RUN find node_modules -name "*.d.ts" -delete || true
+RUN rm -rf node_modules/@types || true
+RUN rm -rf node_modules/typescript || true
+RUN rm -rf node_modules/eslint* || true
+RUN rm -rf node_modules/@typescript-eslint || true
+RUN rm -rf node_modules/prettier || true
+
+# Etapa 3: Runner final ultra otimizado
+FROM gcr.io/distroless/nodejs20-debian12 AS runner
+
+WORKDIR /app
+
+# Copia apenas as dependências de produção otimizadas
+COPY --from=deps /app/node_modules ./node_modules
+
+# Copia builds dos packages internos (apenas o necessário)
+COPY --from=builder /app/packages/domain/dist ./packages/domain/dist
+COPY --from=builder /app/packages/domain/package.json ./packages/domain/
+COPY --from=builder /app/packages/application/dist ./packages/application/dist
+COPY --from=builder /app/packages/application/package.json ./packages/application/
+COPY --from=builder /app/packages/infrastructure/dist ./packages/infrastructure/dist
+COPY --from=builder /app/packages/infrastructure/package.json ./packages/infrastructure/
+COPY --from=builder /app/packages/infrastructure/prisma ./packages/infrastructure/prisma
+
+# Copia arquivos essenciais do build Next.js
+COPY --from=builder /app/web/.next/standalone ./
+COPY --from=builder /app/web/.next/static ./web/.next/static
+COPY --from=builder /app/web/public ./web/public
+COPY --from=builder /app/package.json ./package.json
+
+# Define variáveis de ambiente para produção
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV PORT=3000
+
+# Expõe a porta da aplicação
+EXPOSE 3000
+
+# Comando para iniciar a aplicação (distroless roda como não-root por padrão)
+CMD ["web/server.js"]
