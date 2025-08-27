@@ -102,7 +102,7 @@ rebuild_prod() {
     if [ "$SERVICE_NAME" = "kaora-app" ]; then
         log "Verificando health check da aplicação..."
         for i in {1..30}; do
-            if docker compose -f docker-compose.prod.yml exec -T kaora-app curl -f http://localhost:3000/api/health >/dev/null 2>&1; then
+            if docker compose -f docker-compose.prod.yml exec -T kaora-app curl -f http://localhost:9990/api/health >/dev/null 2>&1; then
                 log "✅ Aplicação está respondendo!"
                 break
             fi
@@ -179,7 +179,7 @@ deploy_initial() {
     # Verificar aplicação
     log "Verificando aplicação..."
     for i in {1..30}; do
-        if docker compose -f docker-compose.prod.yml exec -T kaora-app curl -f http://localhost:3000/api/health >/dev/null 2>&1; then
+        if docker compose -f docker-compose.prod.yml exec -T kaora-app curl -f http://localhost:9990/api/health >/dev/null 2>&1; then
             log "✅ Aplicação está pronta!"
             break
         fi

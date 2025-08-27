@@ -26,13 +26,13 @@ RUN yarn install --immutable
 # Copia todo o código do projeto
 COPY . .
 
+# Gera o cliente Prisma ANTES dos builds
+RUN yarn workspace @kaora/infrastructure run prisma:generate
+
 # Build dos packages internos
 RUN yarn workspace @kaora/domain run build
 RUN yarn workspace @kaora/infrastructure run build
 RUN yarn workspace @kaora/application run build
-
-# Gera o cliente Prisma
-RUN yarn workspace @kaora/infrastructure run prisma:generate
 
 # Build da aplicação Next.js
 RUN yarn workspace web run build
@@ -86,13 +86,13 @@ RUN rm -rf node_modules/@types \
 # Define variáveis de ambiente para produção
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
-ENV PORT=3000
+ENV PORT=9990
 
 # Muda para o usuário não-root
 USER nextjs
 
 # Expõe a porta da aplicação
-EXPOSE 3000
+EXPOSE 9990
 
 # Comando para iniciar a aplicação
 CMD ["node", "web/server.js"]

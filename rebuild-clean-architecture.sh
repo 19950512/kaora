@@ -13,6 +13,13 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
+echo "🗄️ Generating Prisma client..."
+yarn workspace @kaora/infrastructure run prisma:generate
+if [ $? -ne 0 ]; then
+    echo "❌ Prisma client generation failed!"
+    exit 1
+fi
+
 echo "🏗️ Building @kaora/infrastructure..."
 yarn workspace @kaora/infrastructure build
 if [ $? -ne 0 ]; then

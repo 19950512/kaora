@@ -48,7 +48,7 @@ services:
       
       # Configurações de ambiente
       NODE_ENV: production
-      PORT: 3000
+      PORT: 9990
       
       # Configurações de email (se necessário)
       SMTP_HOST: ${SMTP_HOST}
@@ -62,7 +62,7 @@ services:
       - kaora-network
       - proxy-net
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:9990/api/health"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -73,7 +73,7 @@ services:
       - "traefik.http.routers.kaora.rule=Host(`${DOMAIN:-kaora.com.br}`)"
       - "traefik.http.routers.kaora.entrypoints=websecure"
       - "traefik.http.routers.kaora.tls.certresolver=letsencrypt"
-      - "traefik.http.services.kaora.loadbalancer.server.port=3000"
+      - "traefik.http.services.kaora.loadbalancer.server.port=9990"
 
 # ==========================================
 # VOLUMES PERSISTENTES
