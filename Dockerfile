@@ -95,4 +95,4 @@ USER nextjs
 EXPOSE 9990
 
 # Comando para iniciar a aplicação
-CMD ["node", "web/server.js"]
+CMD ["npx", "next", "start", "-p", "9990"]
