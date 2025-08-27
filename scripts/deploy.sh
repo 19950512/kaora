@@ -101,7 +101,7 @@ rebuild_prod() {
     # Verificações específicas do Kaora
     if [ "$SERVICE_NAME" = "kaora-app" ]; then
         log "Verificando health check da aplicação..."
-        for i in {1..30}; do
+        for i in {1..40}; do
             if docker compose -f docker-compose.prod.yml exec -T kaora-app curl -f http://kaora-app:9990/api/health >/dev/null 2>&1; then
                 log "✅ Aplicação está respondendo!"
                 break
@@ -109,7 +109,7 @@ rebuild_prod() {
             echo -n "."
             sleep 2
             
-            if [[ $i -eq 30 ]]; then
+            if [[ $i -eq 40 ]]; then
                 error "❌ Aplicação não respondeu dentro do tempo limite"
                 warn "Verificando logs da aplicação:"
                 docker compose -f docker-compose.prod.yml logs --tail=20 kaora-app
