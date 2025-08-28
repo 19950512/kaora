@@ -57,24 +57,6 @@ check_network() {
     fi
 }
 
-update_database_schema() {
-    log "Atualizando schema do banco de dados..."
-    
-    # Restart do PostgreSQL para limpar prepared statements
-    log "Reiniciando PostgreSQL para limpar cache e prepared statements..."
-    docker compose -f docker-compose.prod.yml restart postgres
-    
-    # Aguarda o PostgreSQL reiniciar
-    sleep 5
-    
-    # Executa o comando para tornar logo_url opcional
-    docker compose -f docker-compose.prod.yml exec -T postgres psql -U kaora_user -d kaora -c "
-        ALTER TABLE business ALTER COLUMN logo_url DROP NOT NULL;
-    " || warn "Schema já pode estar atualizado ou comando falhou (normal se já foi aplicado)"
-    
-    log "Schema do banco atualizado com sucesso"
-}
-
 # Função para realizar o rebuild sem downtime
 rebuild_prod() {
     SERVICE_NAME=$1
@@ -92,11 +74,6 @@ rebuild_prod() {
     git pull origin main
 
     check_env
-    
-    # Atualiza schema do banco se necessário
-    if [ "$SERVICE_NAME" = "kaora-app" ]; then
-        update_database_schema
-    fi
 
     log "Construindo nova imagem sem cache para o serviço ${SERVICE_NAME}..."
     
