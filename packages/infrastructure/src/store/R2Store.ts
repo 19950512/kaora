@@ -38,6 +38,12 @@ export class R2Store implements Store {
       },
       // Force path style for R2 compatibility
       forcePathStyle: true,
+      // Configurações para melhorar resilência SSL
+      requestHandler: {
+        connectionTimeout: 10000, // 10 segundos
+        requestTimeout: 30000,    // 30 segundos
+      },
+      maxAttempts: 2, // Máximo 2 tentativas
     });
   }
 
@@ -68,12 +74,16 @@ export class R2Store implements Store {
       return `https://${this.bucketName}.${ENV.R2_ACCOUNT_ID}.r2.cloudflarestorage.com/${key}`;
     } catch (error: any) {
             
-      // Verificar se é erro de credenciais ou configuração
+      // Verificar se é erro de credenciais, configuração ou SSL
       if (error.message?.includes('Access Denied') || 
           error.Code === 'AccessDenied' ||
           error.message?.includes('SignatureDoesNotMatch') ||
           error.message?.includes('InvalidAccessKeyId') ||
-          error.message?.includes('demo')) {
+          error.message?.includes('demo') ||
+          error.message?.includes('EPROTO') ||
+          error.message?.includes('SSL') ||
+          error.message?.includes('handshake failure') ||
+          error.code === 'EPROTO') {
         throw new Error('R2 configuration missing or invalid. Using demo mode.');
       }
       

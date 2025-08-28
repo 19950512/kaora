@@ -84,11 +84,9 @@ export async function POST(request: NextRequest) {
       });
 
     } catch (uploadError: any) {
-      console.error('❌ Erro ao fazer upload da logo:', uploadError);
-      
-      // Fallback para erro de configuração do R2
+      // Fallback para erro de configuração do R2 (silencioso)
       if (uploadError.message?.includes('R2 configuration missing')) {
-        console.warn('⚠️ R2 não configurado, usando URL simulada');
+        console.log('ℹ️ R2 não configurado - usando modo demonstração');
         
         const timestamp = Date.now();
         const extension = file.name.split('.').pop();
@@ -102,6 +100,8 @@ export async function POST(request: NextRequest) {
         });
       }
       
+      // Para outros erros, logar como erro
+      console.error('❌ Erro ao fazer upload da logo:', uploadError);
       return NextResponse.json({ 
         error: uploadError?.message || 'Erro ao fazer upload da logo.' 
       }, { status: 500 });

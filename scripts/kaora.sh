@@ -68,10 +68,11 @@ show_menu() {
     echo "⚙️ CONFIGURAÇÃO:"
     echo " 11) Configurar ambiente (.env)"
     echo " 12) Validar configurações"
+    echo " 13) 🔍 Testar configuração R2 (uploads)"
     echo ""
     echo "  0) Sair"
     echo ""
-    echo -n "Digite sua escolha [0-12]: "
+    echo -n "Digite sua escolha [0-13]: "
 }
 
 # Função para executar comando com confirmação
@@ -204,6 +205,9 @@ main() {
                 else
                     warn "⚠️ Rede proxy-net não existe (será criada no deploy)"
                 fi
+                ;;
+            13)
+                execute_with_confirm "$SCRIPT_DIR/test-r2-config.sh" "Testar configuração R2 (uploads)"
                 ;;
             0)
                 echo ""
