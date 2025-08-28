@@ -9,7 +9,7 @@ export class Email {
   }
 
   static isValid(value: string): boolean {
-    return /^[\w-.]+@[\w-]+\.[a-zA-Z]{2,}$/.test(value);
+    return /^[\w.-]+@[\w-]+(\.[a-zA-Z]{2,})+$/.test(value);
   }
 
   toString(): string {

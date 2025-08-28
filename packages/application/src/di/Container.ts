@@ -49,6 +49,7 @@ export const TOKENS = {
   
   // Application Services
   BUSINESS_APP_SERVICE: 'BusinessApplicationService',
+  AUDIT_SERVICE: 'AuditService',
 
   // Authentication
   AUTH_SERVICE: 'AuthenticationService',

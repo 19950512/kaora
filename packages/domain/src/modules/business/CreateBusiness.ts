@@ -84,6 +84,7 @@ export class CreateBusiness {
     await this.auditLogRepository.save(new AuditLog({
       context: ContextEnum.BUSINESS_CREATE,
       userId: userId,
+      businessId: businessId,
       details: `Empresa criada: ${params.businessName} por ${params.responsibleEmail}`,
     }));
 
@@ -91,6 +92,7 @@ export class CreateBusiness {
     await this.auditLogRepository.save(new AuditLog({
       context: ContextEnum.USER_CREATE,
       userId: userId,
+      businessId: businessId,
       details: `Usuário criado: ${params.responsibleName} cadastrado ao sistema no momento da criação da empresa ${params.businessName}`,
     }));
 

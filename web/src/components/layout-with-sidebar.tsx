@@ -43,6 +43,7 @@ const menuItems = [
     icon: Settings,
     children: [
       { title: 'Informações da Empresa', href: '/empresa/info' },
+      { title: 'Auditoria', href: '/auditoria' },
       { title: 'Usuários', href: '/usuarios' },
     ]
   },

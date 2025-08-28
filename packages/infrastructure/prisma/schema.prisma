@@ -29,6 +29,7 @@ model Business {
 
   // Relacionamentos
   users     User[]
+  auditLogs AuditLog[]
   
   @@index([document])
   @@index([email])
@@ -76,13 +77,22 @@ model AuditLog {
   userId         String   @map("user_id") @db.Uuid
   timestamp      DateTime @default(now()) @db.Timestamptz
   details        String?  @db.Text
+  ipAddress      String?  @map("ip_address") @db.Inet
+  userAgent      String?  @map("user_agent") @db.Text
+  businessId     String   @map("business_id") @db.Uuid
+  additionalData Json?    @map("additional_data") @db.JsonB
   updatedFields  String?  @map("updated_fields") @db.Text
 
   // Relacionamentos
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([context])
   @@index([timestamp])
+  @@index([ipAddress])
+  @@index([userAgent])
+  @@index([businessId])
+  @@index([businessId, context, timestamp(sort: Desc)])
   @@map("audit_logs")
 }

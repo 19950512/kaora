@@ -57,7 +57,15 @@ export function createContainer(useMockDatabase = false): DIContainer {
     return new BusinessApplicationService(createBusinessUseCase, userRepository, businessRepository, store);
   });
 
-  // 🔐 Authentication Service
+  // � Audit Service
+  container.register(TOKENS.AUDIT_SERVICE, () => {
+    const { AuditService } = require('@kaora/application');
+    const auditRepository = container.get(TOKENS.AUDIT_REPOSITORY);
+    
+    return new AuditService(auditRepository);
+  });
+
+  // �🔐 Authentication Service
   container.register(TOKENS.AUTH_SERVICE, () => {
     const { AuthenticationService } = require('@kaora/application');
     const userRepository = container.get(TOKENS.USER_REPOSITORY);

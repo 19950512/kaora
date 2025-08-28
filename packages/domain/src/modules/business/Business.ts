@@ -1,14 +1,14 @@
 import { UUID } from '../../shared/ValueObject/UUID';
-import { FullName } from '../../shared/ValueObject/FullName';
 import { Email } from '../../shared/ValueObject/Email';
 import { Document } from '../../shared/ValueObject/Document';
 import { Phone } from '../../shared/ValueObject/Phone';
 import { Data } from '../../shared/ValueObject/Data';
 import { Whatsapp } from '../../shared/ValueObject/Whatsapp';
+import { Name } from '../../shared/ValueObject/Name';
 
 export class Business {
   public readonly id: UUID;
-  public name: FullName;
+  public name: Name;
   public email: Email;
   public document: Document;
   public phone: Phone;
@@ -29,7 +29,7 @@ export class Business {
     updatedAt?: string;
   }) {
     this.id = new UUID(params.id);
-    this.name = new FullName(params.name);
+    this.name = new Name(params.name);
     this.email = new Email(params.email);
     this.document = new Document(params.document);
     this.phone = new Phone(params.phone);

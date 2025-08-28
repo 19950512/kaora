@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS business (
     document VARCHAR(20) UNIQUE NOT NULL, -- CPF/CNPJ
     phone VARCHAR(20) NOT NULL,
     whatsapp VARCHAR(20) NOT NULL,
-    logo_url VARCHAR(555) NOT NULL,
+    logo_url VARCHAR(555),
     active BOOLEAN NOT NULL DEFAULT true,
     created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -87,6 +87,10 @@ CREATE TABLE IF NOT EXISTS audit_logs (
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     timestamp TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     details TEXT,
+    ip_address INET,
+    user_agent TEXT,
+    business_id UUID NOT NULL REFERENCES business(id) ON DELETE CASCADE,
+    additional_data JSONB,
     updated_fields TEXT -- JSON dos campos alterados
 );
 
@@ -98,11 +102,20 @@ COMMENT ON COLUMN audit_logs.user_id IS 'Usuário que executou a ação';
 COMMENT ON COLUMN audit_logs.timestamp IS 'Timestamp da ação';
 COMMENT ON COLUMN audit_logs.details IS 'Detalhes da ação executada';
 COMMENT ON COLUMN audit_logs.updated_fields IS 'JSON com campos alterados (para updates)';
+COMMENT ON COLUMN audit_logs.ip_address IS 'Endereço IP do usuário que executou a ação';
+COMMENT ON COLUMN audit_logs.user_agent IS 'User-Agent do usuário que executou a ação';
+COMMENT ON COLUMN audit_logs.business_id IS 'Referência para a empresa do usuário';
 
 -- Índices para performance
 CREATE INDEX IF NOT EXISTS idx_audit_logs_user_id ON audit_logs(user_id);
 CREATE INDEX IF NOT EXISTS idx_audit_logs_context ON audit_logs(context);
 CREATE INDEX IF NOT EXISTS idx_audit_logs_timestamp ON audit_logs(timestamp);
+CREATE INDEX IF NOT EXISTS idx_audit_logs_ip_address ON audit_logs(ip_address);
+CREATE INDEX IF NOT EXISTS idx_audit_logs_user_agent ON audit_logs(user_agent);
+CREATE INDEX IF NOT EXISTS idx_audit_logs_business_id ON audit_logs(business_id);
+
+-- Índice composto para consultas de auditoria por empresa e período
+CREATE INDEX idx_audit_logs_business_context_timestamp ON audit_logs(business_id, context, timestamp DESC);
 
 -- =====================================================
 -- FUNÇÕES DE TRIGGER PARA UPDATED_AT
