@@ -26,6 +26,8 @@ RUN yarn install --immutable
 COPY . .
 
 # Gera cliente Prisma antes dos builds
+RUN rm -rf packages/infrastructure/prisma/generated || true
+ENV PRISMA_GENERATE_SKIP_AUTOINSTALL=true
 RUN yarn workspace @kaora/infrastructure run prisma:generate
 
 # Build dos packages internos

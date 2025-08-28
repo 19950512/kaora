@@ -60,6 +60,13 @@ check_network() {
 update_database_schema() {
     log "Atualizando schema do banco de dados..."
     
+    # Restart do PostgreSQL para limpar prepared statements
+    log "Reiniciando PostgreSQL para limpar cache e prepared statements..."
+    docker compose -f docker-compose.prod.yml restart postgres
+    
+    # Aguarda o PostgreSQL reiniciar
+    sleep 5
+    
     # Executa o comando para tornar logo_url opcional
     docker compose -f docker-compose.prod.yml exec -T postgres psql -U kaora_user -d kaora -c "
         ALTER TABLE business ALTER COLUMN logo_url DROP NOT NULL;
@@ -92,6 +99,16 @@ rebuild_prod() {
     fi
 
     log "Construindo nova imagem sem cache para o serviço ${SERVICE_NAME}..."
+    
+    # Para serviços que usam Prisma, fazer limpeza completa
+    if [ "$SERVICE_NAME" = "kaora-app" ]; then
+        log "Limpando cache do Docker para forçar regeneração do Prisma Client..."
+        docker builder prune -f
+        
+        # Remove imagens relacionadas ao kaora-app para forçar rebuild completo
+        docker image rm $(docker images | grep kaora | awk '{print $3}') 2>/dev/null || true
+    fi
+    
     docker compose -f docker-compose.prod.yml build --no-cache ${SERVICE_NAME}
 
     # Verifica se o build foi bem-sucedido

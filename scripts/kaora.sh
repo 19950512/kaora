@@ -3,9 +3,26 @@
 # ==========================================
 # QUICK START - KAORA
 # ==========================================
-# Script interativo para guiar o usuário
-
-clear
+# Script interativo para g            11)
+                echo ""
+                log "Configurando ambiente..."
+                if [ ! -f ".env" ]; then
+                    if [ -f ".env.production" ]; then
+                        cp .env.production .env
+                        log "Arquivo .env criado a partir de .env.production"
+                    else
+                        error "Arquivo .env.production não encontrado"
+                        continue
+                    fi
+                fi
+                
+                echo -n "Abrir editor para editar .env? (y/N): "
+                read -r edit_env
+                if [[ $edit_env =~ ^[Yy]$ ]]; then
+                    nano .env || vim .env || echo "Editor não encontrado"
+                fi
+                ;;
+            12)r
 set -e
 
 # Cores para output
@@ -59,18 +76,19 @@ show_menu() {
     echo "  5) Testar conexão com banco"
     echo "  6) Ver logs da aplicação"
     echo "  7) Ver status dos serviços"
+    echo "  8) 🔧 Corrigir erro Prisma (prepared statements)"
     echo ""
     echo "🔍 ANÁLISE:"
-    echo "  8) Analisar otimização Docker"
-    echo "  9) Limpar imagens Docker"
+    echo "  9) Analisar otimização Docker"
+    echo " 10) Limpar imagens Docker"
     echo ""
     echo "⚙️ CONFIGURAÇÃO:"
-    echo " 10) Configurar ambiente (.env)"
-    echo " 11) Validar configurações"
+    echo " 11) Configurar ambiente (.env)"
+    echo " 12) Validar configurações"
     echo ""
     echo "  0) Sair"
     echo ""
-    echo -n "Digite sua escolha [0-11]: "
+    echo -n "Digite sua escolha [0-12]: "
 }
 
 # Função para executar comando com confirmação
@@ -140,12 +158,15 @@ main() {
                 execute_with_confirm "docker compose -f docker-compose.prod.yml ps" "Ver status dos serviços"
                 ;;
             8)
-                execute_with_confirm "$SCRIPT_DIR/analyze-docker.sh" "Analisar otimização Docker"
+                execute_with_confirm "$SCRIPT_DIR/fix-prisma-prepared-statements.sh" "Corrigir erro de prepared statements do Prisma"
                 ;;
             9)
-                execute_with_confirm "docker system prune -f" "Limpar imagens Docker"
+                execute_with_confirm "$SCRIPT_DIR/analyze-docker.sh" "Analisar otimização Docker"
                 ;;
             10)
+                execute_with_confirm "docker system prune -f" "Limpar imagens Docker"
+                ;;
+            11)
                 echo ""
                 log "Configurando ambiente..."
                 if [ ! -f ".env" ]; then
