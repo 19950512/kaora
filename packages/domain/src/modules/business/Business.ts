@@ -34,7 +34,7 @@ export class Business {
     this.document = new Document(params.document);
     this.phone = new Phone(params.phone);
     this.whatsapp = new Whatsapp(params.whatsapp);
-    this.logoUrl = params.logoUrl;
+    this.logoUrl = params.logoUrl?.toString();
     this.createdAt = new Data(params.createdAt);
     this.updatedAt = new Data(params.updatedAt);
   }
