@@ -3,26 +3,9 @@
 # ==========================================
 # QUICK START - KAORA
 # ==========================================
-# Script interativo para g            11)
-                echo ""
-                log "Configurando ambiente..."
-                if [ ! -f ".env" ]; then
-                    if [ -f ".env.production" ]; then
-                        cp .env.production .env
-                        log "Arquivo .env criado a partir de .env.production"
-                    else
-                        error "Arquivo .env.production não encontrado"
-                        continue
-                    fi
-                fi
-                
-                echo -n "Abrir editor para editar .env? (y/N): "
-                read -r edit_env
-                if [[ $edit_env =~ ^[Yy]$ ]]; then
-                    nano .env || vim .env || echo "Editor não encontrado"
-                fi
-                ;;
-            12)r
+# Script interativo para guiar o usuário
+
+clear
 set -e
 
 # Cores para output
@@ -185,7 +168,7 @@ main() {
                     nano .env || vim .env || echo "Editor não encontrado"
                 fi
                 ;;
-            11)
+            12)
                 echo ""
                 log "Validando configurações..."
                 
