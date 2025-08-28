@@ -12,7 +12,7 @@ export class PrismaBusinessRepository implements BusinessRepository {
           document: business.document.toString(),
           phone: business.phone.toString(),
           whatsapp: business.whatsapp.toString(),
-          logoUrl: business.logoUrl.toString(),
+          logoUrl: business.logoUrl,
           createdAt: new Date(),
           updatedAt: new Date(),
         },
@@ -48,7 +48,7 @@ export class PrismaBusinessRepository implements BusinessRepository {
         document: business.document.toString(),
         phone: business.phone.toString(),
         whatsapp: business.whatsapp.toString(),
-        logoUrl: business.logoUrl.toString(),
+        logoUrl: business.logoUrl,
         // Deixar que o banco defina createdAt e updatedAt automaticamente
         // createdAt e updatedAt são definidos pelo schema do Prisma com @default(now()) e @updatedAt
       }
@@ -64,7 +64,7 @@ export class PrismaBusinessRepository implements BusinessRepository {
         document: business.document.toString(),
         phone: business.phone.toString(),
         whatsapp: business.whatsapp.toString(),
-        logoUrl: business.logoUrl.toString(),
+        logoUrl: business.logoUrl,
         updatedAt: new Date(),
       }
     });
@@ -91,7 +91,7 @@ export class PrismaBusinessRepository implements BusinessRepository {
       document: data.document,
       phone: data.phone,
       whatsapp: data.whatsapp,
-      logoUrl: data.logoUrl.toString(),
+      logoUrl: data.logoUrl || undefined,
       createdAt: data.createdAt?.toISOString(),
       updatedAt: data.updatedAt?.toISOString(),
     });
