@@ -40,4 +40,19 @@ export class User {
     this.createdAt = new Data(params.createdAt);
     this.updatedAt = new Data(params.updatedAt);
   }
+
+  toObject() {
+    return {
+      id: this.id.toString(),
+      businessId: this.businessId.toString(),
+      name: this.name.toString(),
+      email: this.email.toString(),
+      passwordHash: this.passwordHash,
+      document: this.document.toString(),
+      phone: this.phone.toString(),
+      active: this.active,
+      createdAt: this.createdAt.toISOString(),
+      updatedAt: this.updatedAt.toISOString(),
+    };
+  }
 }

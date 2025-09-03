@@ -51,6 +51,14 @@ export const TOKENS = {
   BUSINESS_APP_SERVICE: 'BusinessApplicationService',
   AUDIT_SERVICE: 'AuditService',
 
+  // ...existing code...
   // Authentication
   AUTH_SERVICE: 'AuthenticationService',
+  USER_SERVICE: 'UserService',
+
+  // User CRUD
+  CREATE_USER: 'CreateUser',
+  UPDATE_USER: 'UpdateUser',
+  DELETE_USER: 'DeleteUser',
 } as const;
+

@@ -49,4 +49,39 @@ export class UserRepositoryImplementation implements UserRepository {
     });
   }
 
+  async findAll(): Promise<User[]> {
+    const results = await prisma.user.findMany();
+    return results.map((result: any) => new User({
+        id: result.id,
+        businessId: result.businessId,
+        name: result.name,
+        email: result.email,
+        passwordHash: result.passwordHash,
+        document: result.document,
+        phone: result.phone,
+        active: result.active,
+        createdAt: result.createdAt,
+        updatedAt: result.updatedAt,
+    }));
+  }
+
+  async update(user: User): Promise<void> {
+    await prisma.user.update({
+      where: { id: user.id.toString() },
+      data: {
+        name: user.name.toString(),
+        email: user.email.toString(),
+        document: user.document.toString(),
+        phone: user.phone.toString(),
+        active: user.active,
+        updatedAt: new Date(),
+      },
+    });
+  }
+
+  async delete(id: string): Promise<void> {
+    await prisma.user.delete({
+      where: { id },
+    });
+  }
 }

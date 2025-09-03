@@ -73,6 +73,33 @@ export function createContainer(useMockDatabase = false): DIContainer {
     return new AuthenticationService(userRepository);
   });
 
+  // User Service
+  container.register(TOKENS.USER_SERVICE, () => {
+    const { UserService } = require('../services/UserService');
+    const userRepository = container.get(TOKENS.USER_REPOSITORY);
+    
+    return new UserService(userRepository);
+  });
+
+  // User CRUD
+  container.register(TOKENS.CREATE_USER, () => {
+    const { CreateUser } = require('../services/user/CreateUser');
+    const userRepository = container.get(TOKENS.USER_REPOSITORY);
+    return new CreateUser(userRepository);
+  });
+
+  container.register(TOKENS.UPDATE_USER, () => {
+    const { UpdateUser } = require('../services/user/UpdateUser');
+    const userRepository = container.get(TOKENS.USER_REPOSITORY);
+    return new UpdateUser(userRepository);
+  });
+
+  container.register(TOKENS.DELETE_USER, () => {
+    const { DeleteUser } = require('../services/user/DeleteUser');
+    const userRepository = container.get(TOKENS.USER_REPOSITORY);
+    return new DeleteUser(userRepository);
+  });
+
   return container;
 }
 
