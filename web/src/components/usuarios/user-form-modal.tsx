@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
+import { toast } from 'sonner';
 
 interface UserData {
   id?: string;
@@ -27,9 +28,10 @@ interface UserFormModalProps {
   onClose: () => void;
   onSave: (user: UserData) => void;
   user: any;
+  className?: string;
 }
 
-export default function UserFormModal({ isOpen, onClose, onSave, user }: UserFormModalProps) {
+export default function UserFormModal({ isOpen, onClose, onSave, user, className }: UserFormModalProps) {
   const [formData, setFormData] = useState<UserData>({
     name: '',
     email: '',
@@ -67,17 +69,23 @@ export default function UserFormModal({ isOpen, onClose, onSave, user }: UserFor
     setFormData((prev: UserData) => ({ ...prev, active: checked }));
   };
 
-  const handleSubmit = () => {
-    onSave(formData);
-    onClose();
+  const handleSubmit = async () => {
+    try {
+      await onSave(formData);
+      // Não fechar aqui, deixar o onSave cuidar disso
+    } catch (error: any) {
+      toast.error(error.message || 'Erro ao salvar usuário');
+    }
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px] bg-card border-border">
+      <DialogContent
+        className={`sm:max-w-[425px] border border-border shadow-xl ${className ?? ''}`}
+      >
         <DialogHeader>
           <DialogTitle>
-            {user ? 'Editar Usuário' : 'Novo Usuário'}
+            {user && user.id ? 'Editar Usuário' : 'Novo Usuário'}
           </DialogTitle>
         </DialogHeader>
         <div className="grid gap-4 py-4">

@@ -42,6 +42,7 @@ export const TOKENS = {
   // Repositories
   BUSINESS_REPOSITORY: 'BusinessRepository',
   USER_REPOSITORY: 'UserRepository',
+  ROLE_REPOSITORY: 'RoleRepository',
   AUDIT_REPOSITORY: 'AuditLogRepository',
   
   // Use Cases
@@ -60,5 +61,11 @@ export const TOKENS = {
   CREATE_USER: 'CreateUser',
   UPDATE_USER: 'UpdateUser',
   DELETE_USER: 'DeleteUser',
+
+  // Role CRUD
+  CREATE_ROLE: 'CreateRole',
+  UPDATE_ROLE: 'UpdateRole',
+  DELETE_ROLE: 'DeleteRole',
+  GET_ROLES: 'GetRoles',
 } as const;
 

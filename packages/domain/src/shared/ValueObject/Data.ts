@@ -21,4 +21,8 @@ export class Data {
   toISOString(): string {
     return this.value.toISOString();
   }
+
+  toJSON(): string {
+    return this.value.toISOString();
+  }
 }

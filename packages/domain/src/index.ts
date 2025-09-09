@@ -3,7 +3,7 @@ export { CreateBusiness } from './modules/business/CreateBusiness';
 export { BusinessRepositoryImplementation, setPrismaClient as setBusinessPrismaClient } from './modules/business/BusinessRepositoryImplementation';
 export { UserRepositoryImplementation, setPrismaClient as setUserPrismaClient } from './modules/user/UserRepositoryImplementation';
 export { AuditLogRepositoryImplementation, setPrismaClient as setAuditPrismaClient } from './shared/audit/AuditLogRepositoryImplementation';
-export { SmtpEmail } from './infra/email/SmtpEmail';
+export { RoleRepositoryImplementation, setPrismaClient as setRolePrismaClient } from './modules/role/RoleRepositoryImplementation';
 
 // Value Objects
 export { UUID } from './shared/ValueObject/UUID';
@@ -21,11 +21,13 @@ export { Age } from './shared/ValueObject/Age';
 // Entities
 export { Business } from './modules/business/Business';
 export { User } from './modules/user/User';
+export { Role } from './modules/role/Role';
 export { AuditLog } from './shared/audit/AuditLog';
 
 // Repositories (interfaces)
 export { BusinessRepository } from './modules/business/BusinessRepository';
 export { UserRepository } from './modules/user/UserRepository';
+export { RoleRepository } from './modules/role/RoleRepository';
 export { AuditLogRepository } from './shared/audit/AuditLogRepository';
 
 // Core interfaces

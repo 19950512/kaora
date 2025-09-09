@@ -8,28 +8,32 @@ interface RouteParams {
 }
 
 export async function PUT(req: Request, { params }: RouteParams) {
+  let userId = 'unknown';
   try {
-    const { id } = params;
+    const { id } = await params;
+    userId = id;
     const body = await req.json();
     const container = getContainer();
     const updateUser = container.get<UpdateUser>('UpdateUser');
     await updateUser.execute(id, body);
     return NextResponse.json({ message: 'Usuário atualizado com sucesso' });
   } catch (error: any) {
-    console.error(`Erro ao atualizar usuário ${params.id}:`, error);
+    console.error(`Erro ao atualizar usuário ${userId}:`, error);
     return NextResponse.json({ message: error.message || 'Erro interno do servidor' }, { status: 400 });
   }
 }
 
 export async function DELETE(req: Request, { params }: RouteParams) {
+  let userId = 'unknown';
   try {
-    const { id } = params;
+    const { id } = await params;
+    userId = id;
     const container = getContainer();
     const deleteUser = container.get<DeleteUser>('DeleteUser');
     await deleteUser.execute(id);
     return NextResponse.json({ message: 'Usuário deletado com sucesso' });
   } catch (error: any) {
-    console.error(`Erro ao deletar usuário ${params.id}:`, error);
+    console.error(`Erro ao deletar usuário ${userId}:`, error);
     return NextResponse.json({ message: error.message || 'Erro interno do servidor' }, { status: 400 });
   }
 }

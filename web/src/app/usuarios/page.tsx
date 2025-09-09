@@ -13,9 +13,10 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import UserFormModal from '@/components/usuarios/user-form-modal';
+import { toast } from 'sonner';
 
 interface UserData {
-  id: string;
+  id: string | any;
   name: any;
   email: any;
   document: any;
@@ -53,14 +54,18 @@ export default function UsuariosPage() {
   };
 
   const handleEditUser = (user: UserData) => {
-    // Converter os tipos complexos para strings simples
+    // Garantir que o ID seja sempre uma string válida
+    const userId = (user.id && typeof user.id === 'string' && user.id !== '[object Object]') 
+      ? user.id 
+      : String(user.id || '');
+    
     const simpleUser = {
-      id: user.id,
-      name: user.name?.value || user.name?.toString() || user.name,
-      email: user.email?.value || user.email?.toString() || user.email,
-      document: user.document?.value || user.document?.toString() || user.document,
-      phone: user.phone?.value || user.phone?.toString() || user.phone,
-      active: user.active,
+      id: userId,
+      name: user.name?.value || user.name?.toString?.() || user.name || '',
+      email: user.email?.value || user.email?.toString?.() || user.email || '',
+      document: user.document?.value || user.document?.toString?.() || user.document || '',
+      phone: user.phone?.value || user.phone?.toString?.() || user.phone || '',
+      active: Boolean(user.active),
     };
     setEditingUser(simpleUser);
     setIsModalOpen(true);
@@ -69,21 +74,32 @@ export default function UsuariosPage() {
   const handleDeleteUser = async (userId: string) => {
     if (confirm('Tem certeza que deseja excluir este usuário?')) {
       try {
-        const response = await fetch(`/api/usuarios/${userId}`, {
+        const id = (userId && typeof userId === 'string' && userId !== '[object Object]') 
+          ? userId 
+          : String(userId || '');
+        const response = await fetch(`/api/usuarios/${id}`, {
           method: 'DELETE',
         });
         if (response.ok) {
+          toast.success('Usuário excluído com sucesso!');
           await fetchUsers();
+        } else {
+          const errorData = await response.json();
+          toast.error(errorData.message || 'Erro ao excluir usuário');
         }
       } catch (error) {
         console.error('Erro ao excluir usuário:', error);
+        toast.error('Erro ao excluir usuário');
       }
     }
   };
 
   const handleSaveUser = async (userData: any) => {
     try {
-      const url = editingUser ? `/api/usuarios/${editingUser.id}` : '/api/usuarios';
+      const userId = editingUser?.id && typeof editingUser.id === 'string' && editingUser.id !== '[object Object]'
+        ? editingUser.id
+        : String(editingUser?.id || '');
+      const url = editingUser ? `/api/usuarios/${userId}` : '/api/usuarios';
       const method = editingUser ? 'PUT' : 'POST';
       
       const response = await fetch(url, {
@@ -95,11 +111,16 @@ export default function UsuariosPage() {
       });
 
       if (response.ok) {
+        toast.success(editingUser ? 'Usuário atualizado com sucesso!' : 'Usuário criado com sucesso!');
         await fetchUsers();
         setIsModalOpen(false);
+      } else {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Erro ao salvar usuário');
       }
-    } catch (error) {
-      console.error('Erro ao salvar usuário:', error);
+    } catch (error: any) {
+      toast.error(error.message || 'Erro ao salvar usuário');
+      throw error; // Re-throw para que o modal não feche
     }
   };
 
@@ -153,49 +174,56 @@ export default function UsuariosPage() {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  users.map((user) => (
-                    <TableRow key={user.id}>
-                      <TableCell className="font-medium">
-                        {user.name?.value || user.name?.toString() || user.name}
-                      </TableCell>
-                      <TableCell>
-                        {user.email?.value || user.email?.toString() || user.email}
-                      </TableCell>
-                      <TableCell>
-                        {user.document?.value || user.document?.toString() || user.document}
-                      </TableCell>
-                      <TableCell>
-                        {user.phone?.value || user.phone?.toString() || user.phone}
-                      </TableCell>
-                      <TableCell>
-                        <span className={`px-2 py-1 rounded-full text-xs ${
-                          user.active 
-                            ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' 
-                            : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
-                        }`}>
-                          {user.active ? 'Sim' : 'Não'}
-                        </span>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex justify-end gap-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleEditUser(user)}
-                          >
-                            Editar
-                          </Button>
-                          <Button
-                            variant="destructive"
-                            size="sm"
-                            onClick={() => handleDeleteUser(user.id)}
-                          >
-                            Excluir
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))
+                  users.map((user, index) => {
+                    // Garantir ID único e válido
+                    const userId = (user.id && typeof user.id === 'string' && user.id !== '[object Object]') 
+                      ? user.id 
+                      : `temp-${index}`;
+                    
+                    return (
+                      <TableRow key={userId}>
+                        <TableCell className="font-medium">
+                          {user.name?.value || user.name?.toString?.() || user.name || ''}
+                        </TableCell>
+                        <TableCell>
+                          {user.email?.value || user.email?.toString?.() || user.email || ''}
+                        </TableCell>
+                        <TableCell>
+                          {user.document?.value || user.document?.toString?.() || user.document || ''}
+                        </TableCell>
+                        <TableCell>
+                          {user.phone?.value || user.phone?.toString?.() || user.phone || ''}
+                        </TableCell>
+                        <TableCell>
+                          <span className={`px-2 py-1 rounded-full text-xs ${
+                            user.active 
+                              ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' 
+                              : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
+                          }`}>
+                            {user.active ? 'Sim' : 'Não'}
+                          </span>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex justify-end gap-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleEditUser(user)}
+                            >
+                              Editar
+                            </Button>
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              onClick={() => handleDeleteUser(userId)}
+                            >
+                              Excluir
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })
                 )}
               </TableBody>
             </Table>
@@ -206,6 +234,7 @@ export default function UsuariosPage() {
             onClose={() => setIsModalOpen(false)}
             onSave={handleSaveUser}
             user={editingUser}
+            className="bg-card"
           />
         </div>
       </LayoutWithSidebar>

@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS business (
     document VARCHAR(20) UNIQUE NOT NULL, -- CPF/CNPJ
     phone VARCHAR(20) NOT NULL,
     whatsapp VARCHAR(20) NOT NULL,
-    logo_url VARCHAR(555),
+    logo_url VARCHAR(500),
     active BOOLEAN NOT NULL DEFAULT true,
     created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -118,6 +118,36 @@ CREATE INDEX IF NOT EXISTS idx_audit_logs_business_id ON audit_logs(business_id)
 CREATE INDEX idx_audit_logs_business_context_timestamp ON audit_logs(business_id, context, timestamp DESC);
 
 -- =====================================================
+-- TABELA: roles (Cargos)
+-- =====================================================
+
+CREATE TABLE IF NOT EXISTS roles (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    business_id UUID NOT NULL REFERENCES business(id) ON DELETE CASCADE,
+    name VARCHAR(255) NOT NULL,
+    active BOOLEAN NOT NULL DEFAULT true,
+    color VARCHAR(7) NOT NULL, -- Para códigos hex (#FFFFFF)
+    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    
+    -- Constraint para nome único por empresa
+    UNIQUE(business_id, name)
+);
+
+-- Comentários para auxiliar entendimento
+COMMENT ON TABLE roles IS 'Tabela que armazena os cargos/roles do sistema (multitenant por empresa)';
+COMMENT ON COLUMN roles.id IS 'Identificador único do cargo';
+COMMENT ON COLUMN roles.business_id IS 'Referência para a empresa do cargo';
+COMMENT ON COLUMN roles.name IS 'Nome do cargo';
+COMMENT ON COLUMN roles.active IS 'Indica se o cargo está ativo';
+COMMENT ON COLUMN roles.color IS 'Cor do cargo em formato hexadecimal (#FFFFFF)';
+
+-- Índices para performance
+CREATE INDEX IF NOT EXISTS idx_roles_business_id ON roles(business_id);
+CREATE INDEX IF NOT EXISTS idx_roles_business_name ON roles(business_id, name);
+CREATE INDEX IF NOT EXISTS idx_roles_business_active ON roles(business_id, active);
+
+-- =====================================================
 -- FUNÇÕES DE TRIGGER PARA UPDATED_AT
 -- =====================================================
 
@@ -138,5 +168,10 @@ CREATE TRIGGER update_business_updated_at
 
 CREATE TRIGGER update_users_updated_at 
     BEFORE UPDATE ON users 
+    FOR EACH ROW 
+    EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_roles_updated_at 
+    BEFORE UPDATE ON roles 
     FOR EACH ROW 
     EXECUTE FUNCTION update_updated_at_column();

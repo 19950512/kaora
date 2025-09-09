@@ -30,6 +30,12 @@ export function createContainer(useMockDatabase = false): DIContainer {
     return new PrismaAuditLogRepository(prisma);
   });
 
+  container.register(TOKENS.ROLE_REPOSITORY, () => {
+    const { PrismaRoleRepository } = require('@kaora/infrastructure');
+    const prisma = container.get(TOKENS.PRISMA_CLIENT);
+    return new PrismaRoleRepository(prisma);
+  });
+
   // 📦 Store (R2)
   container.register(TOKENS.STORE, () => {
     const { R2Store } = require('@kaora/infrastructure');
@@ -85,19 +91,50 @@ export function createContainer(useMockDatabase = false): DIContainer {
   container.register(TOKENS.CREATE_USER, () => {
     const { CreateUser } = require('../services/user/CreateUser');
     const userRepository = container.get(TOKENS.USER_REPOSITORY);
-    return new CreateUser(userRepository);
+    const auditRepository = container.get(TOKENS.AUDIT_REPOSITORY);
+    return new CreateUser(userRepository, auditRepository);
   });
 
   container.register(TOKENS.UPDATE_USER, () => {
     const { UpdateUser } = require('../services/user/UpdateUser');
     const userRepository = container.get(TOKENS.USER_REPOSITORY);
-    return new UpdateUser(userRepository);
+    const auditRepository = container.get(TOKENS.AUDIT_REPOSITORY);
+    return new UpdateUser(userRepository, auditRepository);
   });
 
   container.register(TOKENS.DELETE_USER, () => {
     const { DeleteUser } = require('../services/user/DeleteUser');
     const userRepository = container.get(TOKENS.USER_REPOSITORY);
-    return new DeleteUser(userRepository);
+    const auditRepository = container.get(TOKENS.AUDIT_REPOSITORY);
+    return new DeleteUser(userRepository, auditRepository);
+  });
+
+  // Role CRUD
+  container.register(TOKENS.CREATE_ROLE, () => {
+    const { CreateRole } = require('../services/role/CreateRole');
+    const roleRepository = container.get(TOKENS.ROLE_REPOSITORY);
+    const auditRepository = container.get(TOKENS.AUDIT_REPOSITORY);
+    return new CreateRole(roleRepository, auditRepository);
+  });
+
+  container.register(TOKENS.UPDATE_ROLE, () => {
+    const { UpdateRole } = require('../services/role/UpdateRole');
+    const roleRepository = container.get(TOKENS.ROLE_REPOSITORY);
+    const auditRepository = container.get(TOKENS.AUDIT_REPOSITORY);
+    return new UpdateRole(roleRepository, auditRepository);
+  });
+
+  container.register(TOKENS.DELETE_ROLE, () => {
+    const { DeleteRole } = require('../services/role/DeleteRole');
+    const roleRepository = container.get(TOKENS.ROLE_REPOSITORY);
+    const auditRepository = container.get(TOKENS.AUDIT_REPOSITORY);
+    return new DeleteRole(roleRepository, auditRepository);
+  });
+
+  container.register(TOKENS.GET_ROLES, () => {
+    const { GetRoles } = require('../services/role/GetRoles');
+    const roleRepository = container.get(TOKENS.ROLE_REPOSITORY);
+    return new GetRoles(roleRepository);
   });
 
   return container;

@@ -18,6 +18,10 @@ export class UUID {
     return this.value;
   }
 
+  toJSON(): string {
+    return this.value;
+  }
+
   equals(other: UUID): boolean {
     return this.value === other.value;
   }

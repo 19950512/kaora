@@ -1697,6 +1697,30 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@radix-ui/react-alert-dialog@npm:^1.1.15":
+  version: 1.1.15
+  resolution: "@radix-ui/react-alert-dialog@npm:1.1.15"
+  dependencies:
+    "@radix-ui/primitive": "npm:1.1.3"
+    "@radix-ui/react-compose-refs": "npm:1.1.2"
+    "@radix-ui/react-context": "npm:1.1.2"
+    "@radix-ui/react-dialog": "npm:1.1.15"
+    "@radix-ui/react-primitive": "npm:2.1.3"
+    "@radix-ui/react-slot": "npm:1.2.3"
+  peerDependencies:
+    "@types/react": "*"
+    "@types/react-dom": "*"
+    react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    "@types/react-dom":
+      optional: true
+  checksum: 10c0/038de84ad1b36c162e5f5a3b4034de95558698eb6e3f483d2b1a15f4a502c921c4e6a5a723fe6f29e928ed7001ffe38ac6fd16bb720b1e629892ce7beb1da174
+  languageName: node
+  linkType: hard
+
 "@radix-ui/react-compose-refs@npm:1.1.2":
   version: 1.1.2
   resolution: "@radix-ui/react-compose-refs@npm:1.1.2"
@@ -1723,7 +1747,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@radix-ui/react-dialog@npm:^1.1.15":
+"@radix-ui/react-dialog@npm:1.1.15, @radix-ui/react-dialog@npm:^1.1.15":
   version: 1.1.15
   resolution: "@radix-ui/react-dialog@npm:1.1.15"
   dependencies:
@@ -5134,6 +5158,7 @@ __metadata:
     "@types/node": "npm:^20.10.0"
     dotenv: "npm:^17.2.1"
     lucide-react: "npm:^0.541.0"
+    next: "npm:^15.5.0"
     next-auth: "npm:^4.24.11"
     prisma: "npm:6.14.0"
     react: "npm:^19.1.1"
@@ -5943,17 +5968,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-dom@npm:19.1.0":
-  version: 19.1.0
-  resolution: "react-dom@npm:19.1.0"
-  dependencies:
-    scheduler: "npm:^0.26.0"
-  peerDependencies:
-    react: ^19.1.0
-  checksum: 10c0/3e26e89bb6c67c9a6aa86cb888c7a7f8258f2e347a6d2a15299c17eb16e04c19194e3452bc3255bd34000a61e45e2cb51e46292392340432f133e5a5d2dfb5fc
-  languageName: node
-  linkType: hard
-
 "react-dom@npm:^19.1.1":
   version: 19.1.1
   resolution: "react-dom@npm:19.1.1"
@@ -6042,13 +6056,6 @@ __metadata:
     "@types/react":
       optional: true
   checksum: 10c0/841938ff16d16a6b76895f4cb2e1fea957e5fe3b30febbf03a54892dae1c9153f2383e231dea0b3ba41192ad2f2849448fa859caccd288943bce32639e971bee
-  languageName: node
-  linkType: hard
-
-"react@npm:19.1.0":
-  version: 19.1.0
-  resolution: "react@npm:19.1.0"
-  checksum: 10c0/530fb9a62237d54137a13d2cfb67a7db6a2156faed43eecc423f4713d9b20c6f2728b026b45e28fcd72e8eadb9e9ed4b089e99f5e295d2f0ad3134251bdd3698
   languageName: node
   linkType: hard
 
@@ -6953,6 +6960,7 @@ __metadata:
     "@hookform/resolvers": "npm:^5.2.1"
     "@kaora/application": "workspace:*"
     "@kaora/infrastructure": "workspace:*"
+    "@radix-ui/react-alert-dialog": "npm:^1.1.15"
     "@radix-ui/react-dialog": "npm:^1.1.15"
     "@radix-ui/react-label": "npm:^2.1.7"
     "@radix-ui/react-slot": "npm:^1.2.3"
@@ -6970,8 +6978,8 @@ __metadata:
     next-auth: "npm:^4.24.11"
     next-themes: "npm:^0.4.6"
     prisma: "npm:6.14.0"
-    react: "npm:19.1.0"
-    react-dom: "npm:19.1.0"
+    react: "npm:^19.1.1"
+    react-dom: "npm:^19.1.1"
     react-hook-form: "npm:^7.62.0"
     react-hot-toast: "npm:^2.6.0"
     sonner: "npm:^2.0.7"

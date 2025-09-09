@@ -30,6 +30,7 @@ model Business {
   // Relacionamentos
   users     User[]
   auditLogs AuditLog[]
+  roles     Role[]
   
   @@index([document])
   @@index([email])
@@ -95,4 +96,26 @@ model AuditLog {
   @@index([businessId])
   @@index([businessId, context, timestamp(sort: Desc)])
   @@map("audit_logs")
+}
+
+// =====================================================
+// ROLES (Cargos)
+// =====================================================
+
+model Role {
+  id         String   @id @default(uuid()) @db.Uuid
+  businessId String   @map("business_id") @db.Uuid
+  name       String   @db.VarChar(255)
+  active     Boolean  @default(true)
+  color      String   @db.VarChar(7) // Para códigos hex (#FFFFFF)
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt  DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@unique([businessId, name])
+  @@index([businessId])
+  @@index([businessId, name])
+  @@index([businessId, active])
+  @@map("roles")
 }

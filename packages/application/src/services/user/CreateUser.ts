@@ -1,7 +1,10 @@
-import { User, UserRepository, UUID } from '@kaora/domain';
+import { User, UserRepository, UUID, AuditLog, AuditLogRepository, ContextEnum } from '@kaora/domain';
 
 export class CreateUser {
-  constructor(private readonly userRepository: UserRepository) {}
+  constructor(
+    private readonly userRepository: UserRepository,
+    private readonly auditLogRepository: AuditLogRepository
+  ) {}
 
   async execute(input: CreateUser.Input): Promise<void> {
     const userExists = await this.userRepository.existsByEmailAndBusinessId(input.email, input.businessId);
@@ -14,8 +17,9 @@ export class CreateUser {
       ? await new Promise<string>(resolve => setTimeout(() => resolve(`hashed_${input.password}`), 100))
       : 'no-password';
 
+    const userId = new UUID().toString();
     const user = new User({
-      id: new UUID().toString(),
+      id: userId,
       businessId: input.businessId,
       name: input.name,
       email: input.email,
@@ -26,6 +30,14 @@ export class CreateUser {
     });
 
     await this.userRepository.save(user);
+
+    // Auditoria: registra evento de criação de usuário
+    await this.auditLogRepository.save(new AuditLog({
+      context: ContextEnum.USER_CREATE,
+      userId: userId,
+      businessId: input.businessId,
+      details: `Usuário criado: ${input.name} (${input.email})`,
+    }));
   }
 }
 
