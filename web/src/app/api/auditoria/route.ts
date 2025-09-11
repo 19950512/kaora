@@ -1,22 +1,34 @@
 'use server'
 
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
 import { AuditService } from '@kaora/application'
 import { DatabaseProvider } from '@kaora/infrastructure'
+import { getRequestContext } from '@/lib/auth-server'
 
 const prisma = DatabaseProvider.getInstance()
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
-
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    let ctx: { businessId: string }
+    try {
+      ctx = await getRequestContext(request as unknown as Request)
+    } catch (err: any) {
+      // Se não autenticado, respeitar 401
+      if (err?.status === 401) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      }
+      // Se não há empresa na sessão, retorna vazio para não vazar dados de outros tenants
+      if (err?.message?.includes('Empresa não identificada')) {
+        return NextResponse.json({
+          data: [],
+          pagination: { page: 1, limit: 10, total: 0, pages: 0 }
+        })
+      }
+      // Outros erros seguem o fluxo padrão
+      throw err
     }
 
-    const { getContainer, TOKENS } = await import('@kaora/application');
+  const { getContainer, TOKENS } = await import('@kaora/application');
     const container = getContainer();
 
     const auditService = container.get<AuditService>(TOKENS.AUDIT_SERVICE);
@@ -28,7 +40,7 @@ export async function GET(request: NextRequest) {
     const userId = searchParams.get('userId')
     const startDate = searchParams.get('startDate')
     const endDate = searchParams.get('endDate')
-    const businessId = session.user.businessId
+  const businessId = ctx.businessId
 
     const filters = {
       context: context || undefined,
@@ -39,7 +51,7 @@ export async function GET(request: NextRequest) {
       offset: (page - 1) * limit
     }
 
-    const result = await auditService.getAuditLogs(businessId, filters)
+  const result = await auditService.getAuditLogs(businessId, filters)
 
     // Get user information for the audit logs
     const userIds = [...new Set(result.logs.map(log => log.userId))]
@@ -75,11 +87,11 @@ export async function GET(request: NextRequest) {
       }
     })
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error fetching audit logs:', error)
     return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
+      { error: error?.message || 'Internal server error' },
+      { status: error?.status || 500 }
     )
   }
 }

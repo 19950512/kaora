@@ -102,17 +102,27 @@ export class PrismaUserRepository implements UserRepository {
   async findAll(): Promise<User[]> {
     const data = await this.prisma.user.findMany();
 
-    return data.map((d: any) => new User({
-      id: d.id,
-      businessId: d.businessId,
-      name: d.name,
-      email: d.email,
-      passwordHash: d.passwordHash,
-      document: d.document,
-      phone: d.phone,
-      active: d.active,
-      createdAt: d.createdAt?.toISOString(),
-      updatedAt: d.updatedAt?.toISOString(),
-    }));
+    const users: User[] = [];
+    for (const d of data) {
+      try {
+        users.push(new User({
+          id: d.id,
+          businessId: d.businessId,
+          name: d.name,
+          email: d.email,
+          passwordHash: d.passwordHash,
+          document: d.document,
+          phone: d.phone,
+          active: d.active,
+          createdAt: d.createdAt?.toISOString(),
+          updatedAt: d.updatedAt?.toISOString(),
+        }));
+      } catch (err) {
+        // Pular registros inválidos para não quebrar listagem
+        // eslint-disable-next-line no-console
+        console.warn('[PrismaUserRepository.findAll] Ignorando usuário inválido:', d?.id, err);
+      }
+    }
+    return users;
   }
 }
